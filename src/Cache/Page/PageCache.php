@@ -14,6 +14,14 @@ use Concrete\Core\Config\Repository\Repository;
 
 abstract class PageCache implements FlushableInterface
 {
+
+    /**
+     * @deprecated what's deprecated is the "public" part: use the getLibrary() method to retrieve the library
+     *
+     * @var \Concrete\Core\Cache\Page\PageCache|null
+     */
+    public static $library;
+
     /**
      * Build a Response object starting from a cached page.
      *

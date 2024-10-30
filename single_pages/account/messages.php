@@ -47,8 +47,10 @@ $token = $app->make(Token::class);
     <div class="mt-4" id="ccm-private-message-detail">
         <?php
             $userObject = $msg->getMessageRelevantUserObject();
-            $profileURL = "";
-            if ($userObject) $profileURL = $msg->getMessageRelevantUserObject()->getUserPublicProfileURL();
+            $profileURL = '';
+            if ($userObject) {
+                $profileURL = $userObject->getUserPublicProfileURL();
+            }
         ?>
 
         <?php if ($profileURL) { ?>
@@ -60,7 +62,7 @@ $token = $app->make(Token::class);
                 <?php echo $msg->getMessageRelevantUserName(); ?>
             </a>
         <?php } else { ?>
-            <?php echo $userObject ? $userObject->getUserAvatar()->output() : ""; ?>
+            <?= $userObject ? $userObject->getUserAvatar()->output() : '' ?>
             <?php echo $msg->getMessageRelevantUserName(); ?>
         <?php } ?>
 
@@ -161,18 +163,20 @@ $token = $app->make(Token::class);
             <?php foreach ($messages as $msg) { ?>
                 <?php
                     $userObject = $msg->getMessageRelevantUserObject();
-                    $profileURL = "";
-                    if ($userObject) $profileURL = $msg->getMessageRelevantUserObject()->getUserPublicProfileURL();
+                    $profileURL = '';
+                    if ($userObject) {
+                        $profileURL = $userObject->getUserPublicProfileURL();
+                    }
                 ?>
                 <tr>
                     <td class="ccm-profile-message-from">
                         <?php if ($profileURL) { ?>
                             <a href="<?php echo $profileURL; ?>">
-                                <?php echo $userObject->getUserAvatar()->output(); ?>
+                                <?= $userObject->getUserAvatar()->output() ?>
                             </a>
                         <?php } else { ?>
                             <div>
-                                <?php echo $userObject ? $userObject->getUserAvatar()->output() : ""; ?>
+                                <?= $userObject ? $userObject->getUserAvatar()->output() : '' ?>
                             </div>
                         <?php } ?>
                     </td>

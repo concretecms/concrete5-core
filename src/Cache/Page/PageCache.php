@@ -11,33 +11,9 @@ use Concrete\Core\Permission\Checker;
 use Concrete\Core\Support\Facade\Application;
 use Concrete\Core\User\User;
 use Concrete\Core\Config\Repository\Repository;
-use Concrete\Core\Utility\Service\Validation\Strings;
 
 abstract class PageCache implements FlushableInterface
 {
-    /**
-     * @var Repository
-     */
-    private $config;
-
-    /**
-     * @var Strings
-     */
-    private $stringValidator;
-
-    /**
-     * @deprecated what's deprecated is the "public" part: use the getLibrary() method to retrieve the library
-     *
-     * @var \Concrete\Core\Cache\Page\PageCache|null
-     */
-    public static $library;
-
-    public function __construct(Repository $config, Strings $stringValidator)
-    {
-        $this->config = $config;
-        $this->stringValidator = $stringValidator;
-    }
-
     /**
      * Build a Response object starting from a cached page.
      *
@@ -140,18 +116,20 @@ abstract class PageCache implements FlushableInterface
             'Expires' => $expires,
         ];
 
-        $csp = $this->config->get('concrete.security.misc.content_security_policy');
-        if ((is_array($csp) && count($csp) > 0) || $this->stringValidator->notempty($csp)) {
+        $config = app(Repository::class);
+
+        $csp = $config->get('concrete.security.misc.content_security_policy');
+        if ((is_array($csp) && count($csp) > 0) || (is_string($csp) && trim($csp) !== '')) {
             $headers['Content-Security-Policy'] = $csp;
         }
 
-        $x_frame_options = $this->config->get('concrete.security.misc.strict_transport_security');
-        if ($this->stringValidator->notempty($x_frame_options)) {
-            $headers['Strict-Transport-Security'] = $x_frame_options;
+        $strict_transport_security = $config->get('concrete.security.misc.strict_transport_security');
+        if (is_string($strict_transport_security) && trim($strict_transport_security) !== '') {
+            $headers['Strict-Transport-Security'] = $strict_transport_security;
         }
 
-        $x_frame_options = $this->config->get('concrete.security.misc.strict_transport_security');
-        if ($this->stringValidator->notempty($x_frame_options)) {
+        $x_frame_options = $config->get('concrete.security.misc.x_frame_options');
+        if (is_string($x_frame_options) && trim($x_frame_options) !== '') {
             $headers['X-Frame-Options'] = $x_frame_options;
         }
 

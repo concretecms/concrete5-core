@@ -416,8 +416,8 @@ class Controller extends BlockController implements NotificationProviderInterfac
         $entityManager = $this->app->make(EntityManagerInterface::class);
 
         // Make sure our data goes through correctly.
-        $data['storeFormSubmission'] = isset($data['storeFormSubmission']) ?: 0;
-        $data['notifyMeOnSubmission'] = isset($data['notifyMeOnSubmission']) ?: 0;
+        $data['storeFormSubmission'] = !empty($data['storeFormSubmission']) ? 1 : 0;
+        $data['notifyMeOnSubmission'] = !empty($data['notifyMeOnSubmission']) ? 1 : 0;
 
         // Now, let's handle saving the form entity ID against the form block db record
         $entity = false;

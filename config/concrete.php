@@ -589,7 +589,7 @@ return [
             'directory' => DIRECTORY_PERMISSIONS_MODE_COMPUTED,
         ],
         'download' => [
-            'filename_pattern' => '',
+            'filename_pattern' => '{title}.{extension}',
         ],
     ],
 

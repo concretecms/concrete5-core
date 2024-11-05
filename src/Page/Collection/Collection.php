@@ -623,6 +623,12 @@ class Collection extends ConcreteObject implements TrackableInterface
      */
     public function getAreaCustomStyle($area, $force = false)
     {
+        $areac = $area->getAreaCollectionObject();
+        if ($areac instanceof Stack) {
+            // this fixes the problem of users applying design to the main area on the page, and then that trickling into any
+            // stacks that have been added to other areas of the page.
+            return null;
+        }
         $result = null;
         $styleSet = null;
         $areaHandle = $area->getAreaHandle();

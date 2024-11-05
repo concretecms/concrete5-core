@@ -249,12 +249,26 @@ class Info
             $phpSettings = [
                 "max_execution_time - $maxExecutionTime",
             ];
+
+            $doNotFilter = [
+                'allow_url_fopen',
+                'allow_url_include',
+                'short_open_tag',
+                'error_log',
+                'file_uploads',
+            ];
+            
             foreach ($phpinfo as $name => $section) {
                 foreach ($section as $key => $val) {
                     if (preg_match('/.*max_execution_time*/', $key)) {
                         continue;
                     }
-                    if (strpos($key, 'limit') === false && strpos($key, 'safe') === false && strpos($key, 'max') === false) {
+                    if (strpos($key, 'limit') === false &&
+                        strpos($key, 'safe') === false &&
+                        strpos($key, 'max') === false &&
+                        strpos($key, 'version') === false &&
+                        !in_array($key, $doNotFilter)
+                    ) {
                         continue;
                     }
                     if (is_array($val)) {

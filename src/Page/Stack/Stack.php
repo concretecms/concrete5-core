@@ -7,6 +7,7 @@ use Concrete\Core\Page\Collection\Collection;
 use Concrete\Core\Page\Stack\Folder\Folder;
 use Concrete\Core\Permission\Checker;
 use Concrete\Core\Site\Tree\TreeInterface;
+use Concrete\Core\Support\Facade\Application;
 use Doctrine\DBAL\Connection;
 use GlobalArea;
 use Config;
@@ -57,11 +58,23 @@ class Stack extends Page
      */
     public static function getGlobalAreaStackFromName(Collection $collection, string $arHandle): ?Stack
     {
-        $db = app(Connection::class);
+        $app = Application::getFacadeApplication();
+        $db = $app->make(Connection::class);
         $checker = new Checker($collection);
-        $stackID = $db->executeQuery('select cID from Stacks where stName = ? and stType = ?', [
-            $arHandle, self::ST_TYPE_GLOBAL_AREA
-        ])->fetchOne();
+        
+        /** @var \Concrete\Core\Cache\Level\RequestCache $requestCache */
+        $requestCache = $app->make('cache/request');
+        $identifier = sprintf('/stack/global_area/%s/cID', $arHandle);
+        $item = $requestCache->getItem($identifier);
+        if ($item->isHit()) {
+            $stackID = $item->get();
+        } else {
+            $stackID = $db->executeQuery('select cID from Stacks where stName = ? and stType = ?', [
+                $arHandle, self::ST_TYPE_GLOBAL_AREA
+            ])->fetchOne();
+            $requestCache->save($item->set($stackID));
+        }
+
         if ($stackID) {
             if ($checker->canViewPageVersions()) {
                 $s = Stack::getByID($stackID, 'RECENT');
@@ -116,7 +129,7 @@ class Stack extends Page
     {
         $c = Page::getCurrentPage();
         if (is_object($c) && (!$c->isError())) {
-            $identifier = sprintf('/stack/name/%s/%s/%s/%s', $stackName, $c->getCollectionID(), $cvID, $multilingualContentSource);
+            $identifier = sprintf('/stack/name/%s/%s/%s', $stackName, $c->getCollectionID(), $multilingualContentSource);
             $cache = Core::make('cache/request');
             $item = $cache->getItem($identifier);
             if (!$item->isMiss()) {

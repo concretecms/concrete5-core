@@ -1,10 +1,8 @@
 <?php
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
-use Concrete\Core\Page\Stack\Folder\Folder;
 use Concrete\Core\Page\Stack\Folder\FolderService;
 use Concrete\Core\Page\Stack\Stack;
-use Concrete\Core\Permission\Category;
 
 class ImportStacksStructureRoutine extends AbstractPageStructureRoutine implements SpecifiableHomePageRoutineInterface
 {
@@ -20,62 +18,55 @@ class ImportStacksStructureRoutine extends AbstractPageStructureRoutine implemen
 
     public function import(\SimpleXMLElement $sx)
     {
-        $folderService = new FolderService(\Core::make('app'), \Database::connection());
-
+        if (!isset($sx->stacks)) {
+            return;
+        }
+        $folderService = app(FolderService::class);
         $siteTree = null;
         if (isset($this->home)) {
             $siteTree = $this->home->getSiteTreeObject();
         }
-
-        if (isset($sx->stacks)) {
-
-            $nodes = array();
-            $i = 0;
-            foreach ($sx->stacks->children() as $p) {
-                $p->originalPos = $i;
-                $nodes[] = $p;
-                ++$i;
+        $nodes = [];
+        foreach ($sx->stacks->children() as $child) {
+            $nodes[] = $child;
+        }
+        $nodes = $this->sortElementsByPath($nodes);
+        foreach ($nodes as $p) {
+            $name = (string) $p['name'];
+            if ($p->getName() == 'folder') {
+                $type = 'folder';
+            } else {
+                $type = (string) $p['type'];
             }
-            usort($nodes, array('static', 'setupPageNodeOrder'));
-
-            foreach ($nodes as $p) {
-
+            $pathSlugs = isset($p['path']) ? preg_split('{/}', (string) $p['path'], -1, PREG_SPLIT_NO_EMPTY) : [];
+            $path = $pathSlugs === [] ? '' : ('/' . implode('/', $pathSlugs));
+            if (count($pathSlugs) > 1) {
+                $parentPath = '/' . implode('/', array_slice($pathSlugs, 0, -1));
+                $parent = $folderService->getByPath($parentPath);
+            } else {
                 $parent = null;
-                $path = (string) $p['path'];
-                if ($p->getName() == 'folder') {
-                    $type = 'folder';
-                } else {
-                    $type = (string) $p['type'];
-                }
-                $name = (string) $p['name'];
-                if ($path) {
-                    $lastSlash = strrpos($path, '/');
-                    $parentPath = substr($path, 0, $lastSlash);
-                    if ($parentPath) {
-                        $parent = $folderService->getByPath($parentPath);
-                    }
-                }
-
-                switch($type) {
-                    case 'folder':
-                        $folder = $folderService->getByPath($path);
-                        if (!is_object($folder)) {
-                            $folderService->add($name, $parent);
-                        }
-                        break;
-                    case 'global_area':
-                        $s = Stack::getByName($name, 'RECENT', $siteTree);
-                        if (!is_object($s)) {
-                            Stack::addGlobalArea($name, $siteTree);
-                        }
-                        break;
-                    default:
-                        //stack
-                        $s = Stack::getByPath($path, 'RECENT', $siteTree);
-                        if (!is_object($s)) {
-                            Stack::addStack($name, $parent);
-                        }
-                }
             }
-        }    }
+            switch ($type) {
+                case 'folder':
+                    $folder = $path === '' ? null : $folderService->getByPath($path);
+                    if (!$folder) {
+                        $folderService->add($name, $parent);
+                    }
+                    break;
+                case 'global_area':
+                    $globalArea = Stack::getByName($name, 'RECENT', $siteTree);
+                    if (!$globalArea) {
+                        Stack::addGlobalArea($name, $siteTree);
+                    }
+                    break;
+                default:
+                    // Stack
+                    $stack = $path === '' ? null : Stack::getByPath($path, 'RECENT', $siteTree);
+                    if (!$stack) {
+                        Stack::addStack($name, $parent);
+                    }
+                    break;
+            }
+        }
+    }
 }

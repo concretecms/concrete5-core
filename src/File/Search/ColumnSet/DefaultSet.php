@@ -1,11 +1,11 @@
 <?php
 namespace Concrete\Core\File\Search\ColumnSet;
 
+use Concrete\Core\Config\Repository\Repository;
 use Concrete\Core\File\Search\ColumnSet\Column\DateModifiedColumn;
 use Concrete\Core\File\Search\ColumnSet\Column\NameColumn;
 use Concrete\Core\File\Search\ColumnSet\Column\SizeColumn;
 use Concrete\Core\File\Search\ColumnSet\Column\TypeColumn;
-use Core;
 
 class DefaultSet extends ColumnSet
 {
@@ -70,9 +70,9 @@ class DefaultSet extends ColumnSet
         $this->addColumn(new DateModifiedColumn());
         $this->addColumn(new SizeColumn());
 
-        $config = app('config')->get('concrete.file_manager');
+        $config = app(Repository::class);
 
-        $type = $this->getColumnByKey($config['sort_column'] ?? 'name');
-        $this->setDefaultSortColumn($type, $config['sort_direction'] ?? 'asc');
+        $type = $this->getColumnByKey($config->get('concrete.file_manager.sort_column') ?: 'name');
+        $this->setDefaultSortColumn($type, $config->get('concrete.file_manager.sort_direction') ?: 'asc');
     }
 }

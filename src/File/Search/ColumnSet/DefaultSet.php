@@ -32,9 +32,7 @@ class DefaultSet extends ColumnSet
 
     public static function getDateModified($node)
     {
-        $app = Application::getFacadeApplication();
-
-        return $app->make('date')->formatDateTime($node->getDateLastModified());
+        return app('date')->formatDateTime($node->getDateLastModified());
     }
 
     public static function getName($node)
@@ -57,10 +55,7 @@ class DefaultSet extends ColumnSet
 
     public static function getFileDateActivated($f)
     {
-        $fv = $f->getVersion();
-        $app = Application::getFacadeApplication();
-
-        return $app->make('date')->formatDateTime($f->getDateAdded()->getTimestamp());
+        return app('date')->formatDateTime($f->getDateAdded()->getTimestamp());
     }
 
     public function __construct()

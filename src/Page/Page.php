@@ -2242,7 +2242,7 @@ EOT
      *     @var int $ptID
      *     @var int $pTemplateID
      *     @var int $uID
-     *     @var string $$cFilename
+     *     @var string $cFilename
      *     @var int $cCacheFullPageContent -1: use the default settings; 0: no; 1: yes
      *     @var int $cCacheFullPageContentLifetimeCustom
      *     @var string $cCacheFullPageContentOverrideLifetime

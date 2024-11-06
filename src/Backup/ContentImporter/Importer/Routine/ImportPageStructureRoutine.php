@@ -1,17 +1,26 @@
 <?php
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
-use Concrete\Core\Feature\Feature;
+use Concrete\Core\Error\UserMessageException;
+use Concrete\Core\Localization\Locale\Service;
 use Concrete\Core\Page\Page;
 use Concrete\Core\Page\Template;
 use Concrete\Core\Page\Type\Type;
-use Concrete\Core\Permission\Category;
-use Concrete\Core\User\UserInfo;
+use Concrete\Core\User\UserInfoRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use SimpleXMLElement;
 
 class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements SpecifiableHomePageRoutineInterface
 {
-
+    /**
+     * @var \Concrete\Core\Page\Page|null
+     */
     protected $home;
+
+    /**
+     * @var \Concrete\Core\Entity\Site\Tree|null
+     */
+    private $siteTree;
 
     public function getHandle()
     {
@@ -19,97 +28,169 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
     }
 
     /**
-     * Useful when we're calling this from another routine that imports a new home page.
-     * @param $c
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Backup\ContentImporter\Importer\Routine\SpecifiableHomePageRoutineInterface::setHomePage()
      */
     public function setHomePage($c)
     {
         $this->home = $c;
     }
 
-    public function import(\SimpleXMLElement $sx)
+    public function import(SimpleXMLElement $sx)
     {
-        if (isset($sx->pages)) {
-            $nodes = array();
-            $i = 0;
-            foreach ($sx->pages->page as $p) {
-                $p->originalPos = $i;
-                $nodes[] = $p;
-                ++$i;
+        if (!isset($sx->pages) || !isset($sx->pages->page)) {
+            return;
+        }
+
+        if ($this->home && !$this->home->isError()) {
+            $this->siteTree = $this->home->getSiteTreeObject();
+        } else {
+            $this->home = Page::getByID(Page::getHomePageID(), 'RECENT');
+            if (!$this->home || $this->home->isError()) {
+                throw new UserMessageException(t('Unable to find the home page'));
             }
-            usort($nodes, array('static', 'setupPageNodeOrder'));
-            if (isset($this->home)) {
-                $home = $this->home;
-                $siteTree = $this->home->getSiteTreeObject();
+            $this->siteTree = null;
+        }
+
+        $pageElements = [];
+        foreach ($sx->pages->page as $pageElement) {
+            $pageElements[] = $pageElement;
+        }
+        $pageElements = $this->sortElementsByPath($pageElements);
+        foreach ($pageElements as $pageElement) {
+            $localeInfo = $this->extractLocale($pageElement);
+            $this->getOrCreatePage($pageElement, $localeInfo);
+        }
+    }
+
+    /**
+     * @return \Concrete\Core\Page\Page
+     */
+    private function getOrCreatePage(SimpleXMLElement $pageElement, array $localeInfo = null)
+    {
+        $userName = (string) $pageElement['user'];
+        $userInfo = $userName === '' ? null : app(UserInfoRepository::class)->getByName($userName);
+        $package = static::getPackageObject($pageElement['package']);
+        $cName = isset($pageElement['name']) ? (string) $pageElement['name'] : '';
+        $cDescription = isset($pageElement['description']) ? (string) $pageElement['description'] : '';
+        $cDatePublic = (string) $pageElement['public-date'];
+        $pageTemplate = Template::getByHandle($pageElement['template']);
+        $pageTypeHandle = isset($pageElement['pagetype']) ? (string) $pageElement['pagetype'] : '';
+        $pageType = $pageTypeHandle === '' ? null : Type::getByHandle((string) $pageElement['pagetype']);
+
+        $pathSlugs = isset($pageElement['path']) ? preg_split('{/}', (string) $pageElement['path'], -1, PREG_SPLIT_NO_EMPTY) : [];
+        if ($pathSlugs === []) {
+            $page = $this->home;
+        } else {
+            $pagePath = '/' . implode('/', $pathSlugs);
+            $page = Page::getByPath($pagePath, 'RECENT', $this->siteTree);
+        }
+
+        if ($page && !$page->isError()) {
+            if ($localeInfo !== null) {
+                $this->updateExistingLocale($page, $localeInfo);
+            }
+            $page->update([
+                'cName' => $cName === '' ? null : $cName,
+                'cDescription' => $cDescription,
+                'cDatePublic' => $cDatePublic === '' ? null : $cDatePublic,
+                'ptID' => $pageType === null ? null : $pageType->getPageTypeID(),
+                'pTemplateID' => $pageTemplate === null ? null : $pageTemplate->getPageTemplateID(),
+                'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+                'pkgID' => $package === null ? null : $package->getPackageID(),
+            ]);
+        } else {
+            $slugs = $pathSlugs;
+            $cHandle = array_pop($slugs);
+            if ($slugs === []) {
+                $parent = $this->home;
             } else {
-                $home = Page::getByID(Page::getHomePageID(), 'RECENT');
-                $siteTree = null;
+                $parentPagePath = '/' . implode('/', $slugs);
+                $parent = Page::getByPath($parentPagePath, 'RECENT', $this->siteTree);
+                if (!$parent || $parent->isError()) {
+                    throw new UserMessageException(t('Missing the page with path %s', $parentPagePath));
+                }
             }
-
-            foreach ($nodes as $px) {
-                $pkg = static::getPackageObject($px['package']);
-                $data = array();
-                $user = (string) $px['user'];
-                if ($user != '') {
-                    $ui = UserInfo::getByUserName($user);
-                    if (is_object($ui)) {
-                        $data['uID'] = $ui->getUserID();
-                    } else {
-                        $data['uID'] = USER_SUPER_ID;
-                    }
+            if ($localeInfo === null || $this->localeAlreadyExists($localeInfo)) {
+                $page = $parent->add($pageType, [
+                    'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+                    'pkgID' => $package === null ? 0 : $package->getPackageID(),
+                    'cName' => $cName,
+                    'cHandle' => $cHandle,
+                    'cDescription' => $cDescription,
+                    'cDatePublic' => $cDatePublic === '' ? null : $cDatePublic,
+                ], $pageTemplate);
+            } else {
+                if (!$pageTemplate) {
+                    throw new UserMessageException(t('Missing page template when creating the home of a language'));
                 }
-                $cDatePublic = (string) $px['public-date'];
-                if ($cDatePublic) {
-                    $data['cDatePublic'] = $cDatePublic;
-                }
-
-                $data['pkgID'] = 0;
-                if (is_object($pkg)) {
-                    $data['pkgID'] = $pkg->getPackageID();
-                }
-                $args = array();
-                $ct = Type::getByHandle($px['pagetype']);
-                $template = Template::getByHandle($px['template']);
-                if ($px['path'] != '') {
-                    // not home page
-                    $page = Page::getByPath($px['path'], 'RECENT', $siteTree);
-                    if (!is_object($page) || ($page->isError())) {
-                        $lastSlash = strrpos((string) $px['path'], '/');
-                        $parentPath = substr((string) $px['path'], 0, $lastSlash);
-                        $data['cHandle'] = substr((string) $px['path'], $lastSlash + 1);
-                        if (!$parentPath) {
-                            $parent = $home;
-                        } else {
-                            $parent = Page::getByPath($parentPath, 'RECENT', $siteTree);
-                        }
-                        $page = $parent->add($ct, $data);
-                    }
-                } else {
-                    $page = $home;
-                }
-
-                $cName = (string) $px['name'];
-                if ($cName) {
-                    $args['cName'] = $cName;
-                }
-
-                $cDescription = (string) $px['description'];
-                if ($cDescription) {
-                    $args['cDescription'] = $cDescription;
-                }
-
-                if (is_object($ct)) {
-                    $args['ptID'] = $ct->getPageTypeID();
-                }
-
-                if ($template) {
-                    $args['pTemplateID'] = $template->getPageTemplateID();
-                }
-
-                if (count($args)) {
-                    $page->update($args);
-                }
+                $service = app(Service::class);
+                $locale = $service->add($this->home->getSite(), $localeInfo['language'], $localeInfo['country']);
+                $page = $service->addHomePage($locale, $pageTemplate, $cName === '' ? 'Home' : $cName, $cHandle);
+                $page->update([
+                    'cDescription' => $cDescription,
+                    'cDatePublic' => $cDatePublic === '' ? null : $cDatePublic,
+                    'ptID' => $pageType === null ? null : $pageType->getPageTypeID(),
+                    'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+                    'pkgID' => $package === null ? 0 : $package->getPackageID(),
+                ]);
             }
         }
+    }
+
+    private function extractLocale(SimpleXMLElement $pageElement)
+    {
+        if (!isset($pageElement->locale)) {
+            return null;
+        }
+        $localeElement = $pageElement->locale;
+        $language = isset($localeElement['language']) ? (string) $localeElement['language'] : '';
+        if ($language === '') {
+            return null;
+        }
+        $country =  isset($localeElement['country']) ? (string) $localeElement['country'] : '';
+        if ($country === '') {
+            return null;
+        }
+        return [
+            'language' => $language,
+            'country' => $country,
+        ];
+    }
+
+    private function updateExistingLocale(Page $page, array $localeInfo)
+    {
+        $pageTree = $page->getSiteTreeObject();
+        if (!$pageTree || $pageTree->getSiteHomePageID() != $page->getCollectionID()) {
+            return;
+        }
+        $editingLocale = $pageTree->getLocale();
+        if ($editingLocale->getLanguage() === $localeInfo['language'] && $editingLocale->getCountry() === $localeInfo['country']) {
+            return;
+        }
+        if ($this->localeAlreadyExists($localeInfo)) {
+            return;
+        }
+        $editingLocale->setLanguage($localeInfo['language']);
+        $editingLocale->setCountry($localeInfo['country']);
+        $service = app(Service::class);
+        $service->updatePluralSettings($editingLocale);
+        $em = app(EntityManagerInterface::class);
+        $em->flush();
+    }
+
+    /**
+     * @return bool
+     */
+    private function localeAlreadyExists(array $localeInfo)
+    {
+        foreach ($this->home->getSite()->getLocales() as $locale) {
+            if ($locale->getLanguage() === $localeInfo['language'] && $locale->getCountry() === $localeInfo['country']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

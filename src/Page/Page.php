@@ -2242,6 +2242,7 @@ EOT
      *     @var int $ptID
      *     @var int $pTemplateID
      *     @var int $uID
+     *     @var int $pkgID
      *     @var string $cFilename
      *     @var int $cCacheFullPageContent -1: use the default settings; 0: no; 1: yes
      *     @var int $cCacheFullPageContentLifetimeCustom
@@ -2260,7 +2261,7 @@ EOT
         $cDescription = $this->getCollectionDescription();
         $cDatePublic = $this->getCollectionDatePublic();
         $uID = $this->getCollectionUserID();
-        $pkgID = $this->getPackageID();
+        $pkgID = empty($data['pkgID']) ? $this->getPackageID() : $data['pkgID'];
         $cFilename = $this->getCollectionFilename();
         $pTemplateID = $this->getPageTemplateID();
         $ptID = $this->getPageTypeID();

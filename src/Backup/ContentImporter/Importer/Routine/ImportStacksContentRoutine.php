@@ -1,44 +1,60 @@
 <?php
+
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
-use Concrete\Core\Attribute\Type;
-use Concrete\Core\Block\BlockType\BlockType;
+use Concrete\Core\Multilingual\Page\Section\Section;
 use Concrete\Core\Page\Stack\Stack;
-use Concrete\Core\Permission\Category;
-use Concrete\Core\Validation\BannedWord\BannedWord;
+use SimpleXMLElement;
 
 class ImportStacksContentRoutine extends AbstractPageContentRoutine implements SpecifiableHomePageRoutineInterface
 {
+    /**
+     * @var \Concrete\Core\Page\Page|null
+     */
+    protected $home;
+
     public function getHandle()
     {
         return 'stacks_content';
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Backup\ContentImporter\Importer\Routine\SpecifiableHomePageRoutineInterface::setHomePage()
+     */
     public function setHomePage($page)
     {
         $this->home = $page;
     }
 
-    public function import(\SimpleXMLElement $sx)
+    public function import(SimpleXMLElement $sx)
     {
-        $siteTree = null;
-        if (isset($this->home)) {
-            $siteTree = $this->home->getSiteTreeObject();
+        if (!isset($sx->stacks)) {
+            return;
         }
-
-        if (isset($sx->stacks)) {
-            foreach ($sx->stacks->stack as $p) {
-                $path = (string) $p['path'];
-                if ($path) {
-                    $stack = Stack::getByPath($path, 'RECENT', $siteTree);
-                } else {
-                    $stack = Stack::getByName((string) $p['name'], 'RECENT', $siteTree);
+        $site = $this->home ? $this->home->getSite() : null;
+        $siteTree = $this->home ? $this->home->getSiteTreeObject() : null;
+        foreach ($sx->stacks->stack as $p) {
+            $pathSlugs = preg_split('{/}', (string) $p['path'], -1, PREG_SPLIT_NO_EMPTY);
+            $path = '/' . implode('/', $pathSlugs);
+            if ($path !== '/') {
+                $stack = Stack::getByPath($path, 'RECENT', $siteTree);
+            } else {
+                $stack = Stack::getByName((string) $p['name'], 'RECENT', $siteTree);
+            }
+            $locale = isset($p['section']) ? (string) $p['section'] : '';
+            if ($locale !== '') {
+                $section = Section::getByLocale($locale, $site);
+                if (!$section) {
+                    continue;
                 }
-                if (isset($p->area)) {
-                    $this->importPageAreas($stack, $p);
-                }
+                $localizedStack = $stack->getLocalizedStack($section);
+                $stack = $localizedStack ?: $stack->addLocalizedStack($section);
+            }
+            if (isset($p->area)) {
+                $this->importPageAreas($stack, $p);
             }
         }
     }
-
 }

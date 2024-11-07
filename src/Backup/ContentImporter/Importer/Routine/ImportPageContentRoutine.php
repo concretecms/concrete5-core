@@ -2,6 +2,7 @@
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
 use Concrete\Core\Attribute\Category\PageCategory;
+use Concrete\Core\Multilingual\Page\Section\Section;
 use Concrete\Core\Page\Page;
 use SimpleXMLElement;
 
@@ -54,7 +55,59 @@ class ImportPageContentRoutine extends AbstractPageContentRoutine implements Spe
                     }
                 }
             }
+            $hrefLangMap = $this->getHrefLangMap($pageElement);
+            if ($hrefLangMap !== []) {
+                $this->applyHrefLangMap($page, $hrefLangMap);
+            }
             $page->reindex();
+        }
+    }
+
+    /**
+     * @return array keys are the destination locale ID, values are the path of the destination page
+     */
+    private function getHrefLangMap(SimpleXMLElement $parentElement)
+    {
+        if (!isset($parentElement->hreflang) || !isset($parentElement->hreflang->alternate)) {
+            return [];
+        }
+        $map = [];
+        foreach ($parentElement->hreflang->alternate as $alternateElement) {
+            $locale = (string) $alternateElement['locale'];
+            if ($locale === '') {
+                continue;
+            }
+            $path = (string) $alternateElement['path'];
+            if ($path === '') {
+                continue;
+            }
+            $map[$locale] = $path;
+        }
+
+        return $map;
+    }
+
+    private function applyHrefLangMap(Page $sourcePage, array $map)
+    {
+        foreach ($map as $destinationLocaleID => $destinationPagePath) {
+            $destinationPage = Page::getByPath($destinationPagePath);
+            if (!$destinationPage || $destinationPage->isError() || $destinationPage->getCollectionID() == $sourcePage->getCollectionID()) {
+                continue;
+            }
+            $destinationSection = Section::getByID($destinationPage->getCollectionID());
+            if (!$destinationSection || $destinationSection->isError()) {
+                $destinationSection = Section::getBySectionOfSite($destinationPage);
+                if (!$destinationSection || $destinationSection->isError()) {
+                    continue;
+                }
+            }
+            if ($destinationSection->getLocale() !== $destinationLocaleID) {
+                continue;
+            }
+            if (!Section::isAssigned($sourcePage)) {
+                Section::registerPage($sourcePage);
+            }
+            Section::relatePage($sourcePage, $destinationPage, $destinationSection->getLocale());
         }
     }
 }

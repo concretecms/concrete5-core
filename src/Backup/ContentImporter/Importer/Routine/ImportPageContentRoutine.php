@@ -1,65 +1,60 @@
 <?php
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
-use Concrete\Core\Attribute\Key\CollectionKey;
-use Concrete\Core\Attribute\Type;
-use Concrete\Core\Block\BlockType\BlockType;
+use Concrete\Core\Attribute\Category\PageCategory;
 use Concrete\Core\Page\Page;
-use Concrete\Core\Permission\Category;
-use Concrete\Core\Validation\BannedWord\BannedWord;
+use SimpleXMLElement;
 
 class ImportPageContentRoutine extends AbstractPageContentRoutine implements SpecifiableHomePageRoutineInterface
 {
+    /**
+     * @var \Concrete\Core\Page\Page|null
+     */
+    protected $home;
+
     public function getHandle()
     {
         return 'page_content';
     }
 
     /**
-     * Useful when we're calling this from another routine that imports a new home page.
-     * @param $c
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Backup\ContentImporter\Importer\Routine\SpecifiableHomePageRoutineInterface::setHomePage()
      */
     public function setHomePage($c)
     {
         $this->home = $c;
     }
 
-    public function import(\SimpleXMLElement $sx)
+    public function import(SimpleXMLElement $sx)
     {
-
-        $siteTree = null;
-        if (isset($this->home)) {
-            $siteTree = $this->home->getSiteTreeObject();
+        if (!isset($sx->pages) || !isset($sx->pages->page)) {
+            return;
         }
-
-        if (isset($sx->pages)) {
-            foreach ($sx->pages->page as $px) {
-                if ($px['path'] != '') {
-                    $page = Page::getByPath($px['path'], 'RECENT', $siteTree);
-                } else {
-                    if (isset($this->home)) {
-                        $page = $this->home;
-                    } else {
-                        $page = Page::getByID(Page::getHomePageID(), 'RECENT');
-                    }
-                }
-                if (isset($px->area)) {
-                    $this->importPageAreas($page, $px);
-                }
-                if (isset($px->attributes)) {
-                    foreach ($px->attributes->children() as $attr) {
-                        $handle = (string) $attr['handle'];
-                        $ak = CollectionKey::getByHandle($handle);
-                        if (is_object($ak)) {
-                            $value = $ak->getController()->importValue($attr);
-                            $page->setAttribute($handle, $value);
-                        }
-                    }
-                }
-                $page->reindex();
+        $siteTree = $this->home ? $this->home->getSiteTreeObject() : null;
+        $pageAttributeCategory = app(PageCategory::class);
+        foreach ($sx->pages->page as $pageElement) {
+            $path = '/' . trim((string) $pageElement['path'], '/');
+            if ($path !== '/') {
+                $page = Page::getByPath($path, 'RECENT', $siteTree);
+            } else {
+                $page = $this->home ?: Page::getByID(Page::getHomePageID(), 'RECENT');
             }
+            if (isset($pageElement->area)) {
+                $this->importPageAreas($page, $pageElement);
+            }
+            if (isset($pageElement->attributes)) {
+                foreach ($pageElement->attributes->children() as $attr) {
+                    $handle = (string) $attr['handle'];
+                    $ak = $pageAttributeCategory->getAttributeKeyByHandle($handle);
+                    if ($ak) {
+                        $value = $ak->getController()->importValue($attr);
+                        $page->setAttribute($handle, $value);
+                    }
+                }
+            }
+            $page->reindex();
         }
-
     }
-
 }

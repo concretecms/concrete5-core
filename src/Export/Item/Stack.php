@@ -5,6 +5,7 @@ namespace Concrete\Core\Export\Item;
 use Concrete\Core\Area\Area as AreaObject;
 use Concrete\Core\Database\Connection\Connection;
 use Concrete\Core\Multilingual\Page\Section\Section as SectionObject;
+use Concrete\Core\Page\Stack\Folder\FolderService;
 use Concrete\Core\Page\Stack\Stack as StackObject;
 use SimpleXMLElement;
 
@@ -23,14 +24,15 @@ class Stack implements ItemInterface
         if (!$stack->isNeutralStack()) {
             return [];
         }
+        $path = $this->buildStackPath($stack);
         $newNodes = [
-            $this->exportStack($stack, $xml)
+            $this->exportStack($xml, $stack, $path)
         ];
         $sections = SectionObject::getList($stack->getSite());
         foreach ($sections as $section) {
             $localizedStack = $stack->getLocalizedStack($section);
             if ($localizedStack !== null) {
-                $newNodes[] = $this->exportStack($localizedStack, $xml, $section);
+                $newNodes[] = $this->exportStack($xml, $localizedStack, $path, $section);
             }
         }
 
@@ -38,9 +40,34 @@ class Stack implements ItemInterface
     }
 
     /**
+     * @return string
+     */
+    private function buildStackPath(StackObject $stack)
+    {
+        if ($stack->getStackType() === StackObject::ST_TYPE_GLOBAL_AREA) {
+            return '/';
+        }
+        $slugs = [];
+        $page = $stack;
+        $service = app(FolderService::class);
+        while (true) {
+            $folder = $service->getByID($page->getCollectionParentID());
+            if (!$folder) {
+                break;
+            }
+            $page = $folder->getPage();
+            $slugs[] = $page->getCollectionName();
+        }
+
+        return '/' . implode('/', array_reverse($slugs));
+    }
+
+    /**
+     * @param string $path
+     *
      * @return \SimpleXMLElement
      */
-    private function exportStack(StackObject $stack, SimpleXMLElement $xml, SectionObject $section = null)
+    private function exportStack(SimpleXMLElement $xml, StackObject $stack, $path, SectionObject $section = null)
     {
         $db = app(Connection::class);
         $node = $xml->addChild('stack');
@@ -49,7 +76,7 @@ class Stack implements ItemInterface
         if ($type) {
             $node->addAttribute('type', $type);
         }
-        $node->addAttribute('path', substr($stack->getCollectionPath(), strlen(STACKS_PAGE_PATH)));
+        $node->addAttribute('path', $path);
         if ($section !== null) {
             $node->addAttribute('section', $section->getLocale());
         }

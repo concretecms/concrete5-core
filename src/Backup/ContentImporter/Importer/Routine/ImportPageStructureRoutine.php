@@ -20,7 +20,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
     /**
      * @var \Concrete\Core\Entity\Site\Tree|null
      */
-    private $siteTree;
+    private $defaultSiteTree;
 
     public function getHandle()
     {
@@ -43,15 +43,13 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             return;
         }
 
-        if ($this->home && !$this->home->isError()) {
-            $this->siteTree = $this->home->getSiteTreeObject();
-        } else {
+        if (!$this->home || $this->home->isError()) {
             $this->home = Page::getByID(Page::getHomePageID(), 'RECENT');
             if (!$this->home || $this->home->isError()) {
                 throw new UserMessageException(t('Unable to find the home page'));
             }
-            $this->siteTree = null;
         }
+        $this->defaultSiteTree = $this->home->getSiteTreeObject();
 
         $pageElements = [];
         foreach ($sx->pages->page as $pageElement) {
@@ -84,7 +82,10 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             $page = $this->home;
         } else {
             $pagePath = '/' . implode('/', $pathSlugs);
-            $page = Page::getByPath($pagePath, 'RECENT', $this->siteTree);
+            $page = Page::getByPath($pagePath, 'RECENT', $this->defaultSiteTree);
+            if (!$page || $page->isError() && $this->defaultSiteTree === null) {
+                $page = Page::getByPath($pagePath, 'RECENT');
+            }
         }
 
         if ($page && !$page->isError()) {
@@ -107,7 +108,10 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
                 $parent = $this->home;
             } else {
                 $parentPagePath = '/' . implode('/', $slugs);
-                $parent = Page::getByPath($parentPagePath, 'RECENT', $this->siteTree);
+                $parent = Page::getByPath($parentPagePath, 'RECENT', $this->defaultSiteTree);
+                if ((!$parent || $parent->isError()) && $this->defaultSiteTree !== null) {
+                    $parent = Page::getByPath($parentPagePath, 'RECENT');
+                }
                 if (!$parent || $parent->isError()) {
                     throw new UserMessageException(t('Missing the page with path %s', $parentPagePath));
                 }

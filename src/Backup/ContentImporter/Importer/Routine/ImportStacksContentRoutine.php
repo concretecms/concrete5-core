@@ -8,10 +8,22 @@ use SimpleXMLElement;
 
 class ImportStacksContentRoutine extends AbstractPageContentRoutine implements SpecifiableHomePageRoutineInterface
 {
+    use StackTrait;
+
     /**
      * @var \Concrete\Core\Page\Page|null
      */
     protected $home;
+
+    /**
+     * @var \Concrete\Core\Entity\Site\Tree|null
+     */
+    private $defaultSiteTree;
+
+    /**
+     * @var \Concrete\Core\Entity\Site\Site|null
+     */
+    private $site;
 
     public function getHandle()
     {
@@ -33,19 +45,13 @@ class ImportStacksContentRoutine extends AbstractPageContentRoutine implements S
         if (!isset($sx->stacks)) {
             return;
         }
-        $site = $this->home ? $this->home->getSite() : null;
-        $siteTree = $this->home ? $this->home->getSiteTreeObject() : null;
+        $this->defaultSiteTree = $this->home ? $this->home->getSiteTreeObject() : null;
+        $this->site = $this->home ? $this->home->getSite() : null;
         foreach ($sx->stacks->stack as $p) {
-            $pathSlugs = preg_split('{/}', (string) $p['path'], -1, PREG_SPLIT_NO_EMPTY);
-            $path = '/' . implode('/', $pathSlugs);
-            if ($path !== '/') {
-                $stack = Stack::getByPath($path, 'RECENT', $siteTree);
-            } else {
-                $stack = Stack::getByName((string) $p['name'], 'RECENT', $siteTree);
-            }
+            $stack = $this->getStack($p);
             $locale = isset($p['section']) ? (string) $p['section'] : '';
             if ($locale !== '') {
-                $section = Section::getByLocale($locale, $site);
+                $section = Section::getByLocale($locale, $this->site);
                 if (!$section) {
                     continue;
                 }
@@ -56,5 +62,21 @@ class ImportStacksContentRoutine extends AbstractPageContentRoutine implements S
                 $this->importPageAreas($stack, $p);
             }
         }
+    }
+
+    /**
+     * @return \Concrete\Core\Page\Stack\Stack
+     */
+    private function getStack(SimpleXMLElement $stackElement)
+    {
+        $name = (string) $stackElement['name'];
+        $type = (string) $stackElement['type'];
+        if ($type === 'global_area') {
+            return Stack::getByName($name, 'RECENT', $this->defaultSiteTree);
+        }
+        $folder = $this->getOrCreateFolderByPath('/' . trim((string) $stackElement['path'], '/'));
+        $stackID = $this->getStackIDByName($name, $folder);
+
+        return Stack::getByID($stackID);
     }
 }

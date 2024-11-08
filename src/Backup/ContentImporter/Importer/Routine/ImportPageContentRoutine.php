@@ -33,12 +33,15 @@ class ImportPageContentRoutine extends AbstractPageContentRoutine implements Spe
         if (!isset($sx->pages) || !isset($sx->pages->page)) {
             return;
         }
-        $siteTree = $this->home ? $this->home->getSiteTreeObject() : null;
+        $defaultSiteTree = $this->home ? $this->home->getSiteTreeObject() : null;
         $pageAttributeCategory = app(PageCategory::class);
         foreach ($sx->pages->page as $pageElement) {
             $path = '/' . trim((string) $pageElement['path'], '/');
             if ($path !== '/') {
-                $page = Page::getByPath($path, 'RECENT', $siteTree);
+                $page = Page::getByPath($path, 'RECENT', $defaultSiteTree);
+                if ((!$page || $page->isError()) && $defaultSiteTree === null) {
+                    $page = Page::getByPath($path, 'RECENT');
+                }
             } else {
                 $page = $this->home ?: Page::getByID(Page::getHomePageID(), 'RECENT');
             }

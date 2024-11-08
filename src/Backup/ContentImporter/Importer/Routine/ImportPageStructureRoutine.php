@@ -40,10 +40,16 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
 
     public function import(SimpleXMLElement $sx)
     {
-        if (!isset($sx->pages) || !isset($sx->pages->page)) {
+        if (!isset($sx->pages)) {
             return;
         }
-
+        $childElements = [];
+        foreach ($sx->pages->children() as $childElement) {
+            $childElements[] = $childElement;
+        }
+        if ($childElements === []) {
+            return;
+        }
         if (!$this->home || $this->home->isError()) {
             $this->home = Page::getByID(Page::getHomePageID(), 'RECENT');
             if (!$this->home || $this->home->isError()) {
@@ -51,16 +57,18 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             }
         }
         $this->defaultSiteTree = $this->home->getSiteTreeObject();
-
-        $pageElements = [];
-        foreach ($sx->pages->page as $pageElement) {
-            $pageElements[] = $pageElement;
-        }
-        $pageElements = $this->sortElementsByPath($pageElements);
-        foreach ($pageElements as $pageElement) {
-            $localeInfo = $this->extractLocale($pageElement);
-            $page = $this->getOrCreatePage($pageElement, $localeInfo);
-            $this->importAdditionalPagePath($pageElement, $page);
+        $childElements = $this->sortElementsByPath($childElements);
+        foreach ($childElements as $childElement) {
+            switch ($childElement->getName()) {
+                case 'page':
+                    $localeInfo = $this->extractLocale($childElement);
+                    $page = $this->getOrCreatePage($childElement, $localeInfo);
+                    $this->importAdditionalPagePaths($childElement, $page);
+                    break;
+                case 'external-link':
+                    $this->importExternalLink($childElement);
+                    break;
+            }
         }
     }
 
@@ -205,7 +213,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         return false;
     }
 
-    private function importAdditionalPagePath(SimpleXMLElement $pageElement, Page $page)
+    private function importAdditionalPagePaths(SimpleXMLElement $pageElement, Page $page)
     {
         if (!isset($pageElement->{'additional-path'})) {
             return;
@@ -219,5 +227,33 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             $em->persist($pagePath);
         }
         $em->flush();
+    }
+
+    private function importExternalLink(SimpleXMLElement $externalLinkElement)
+    {
+        $slugs = preg_split('{/}', (string) $externalLinkElement['path'], -1, PREG_SPLIT_NO_EMPTY);
+        $cHandle = array_pop($slugs);
+        if ($cHandle === null) {
+            throw new UserMessageException(t('Missing the path of the external link'));
+        }
+        $parentPagePath = '/' . implode('/', $slugs);
+        $parent = Page::getByPath($parentPagePath, 'RECENT', $this->defaultSiteTree);
+        if ((!$parent || $parent->isError()) && $this->defaultSiteTree !== null) {
+            $parent = Page::getByPath($parentPagePath, 'RECENT');
+        }
+        if (!$parent || $parent->isError()) {
+            throw new UserMessageException(t('Missing the page with path %s', $parentPagePath));
+        }
+        $cID = $parent->addCollectionAliasExternal(
+            (string) $externalLinkElement['name'],
+            (string) $externalLinkElement['destination'],
+            filter_var((string) $externalLinkElement['new-window'], FILTER_VALIDATE_BOOLEAN)
+        );
+        $page = Page::getByID($cID);
+        if ($page->getCollectionHandle() !== $cHandle) {
+            $page->update([
+                'cHandle' => $cHandle,
+            ]);
+        }
     }
 }

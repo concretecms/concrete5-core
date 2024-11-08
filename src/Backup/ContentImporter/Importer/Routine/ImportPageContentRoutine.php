@@ -92,6 +92,7 @@ class ImportPageContentRoutine extends AbstractPageContentRoutine implements Spe
 
     private function applyHrefLangMap(Page $sourcePage, array $map)
     {
+        app('multilingual/detector')->assumeEnabled();
         foreach ($map as $destinationLocaleID => $destinationPagePath) {
             $destinationPage = Page::getByPath($destinationPagePath);
             if (!$destinationPage || $destinationPage->isError() || $destinationPage->getCollectionID() == $sourcePage->getCollectionID()) {

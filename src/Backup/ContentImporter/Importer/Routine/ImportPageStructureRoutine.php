@@ -129,6 +129,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
                 if (!$pageTemplate) {
                     throw new UserMessageException(t('Missing page template when creating the home of a language'));
                 }
+                app('multilingual/detector')->assumeEnabled();
                 $service = app(Service::class);
                 $locale = $service->add($this->home->getSite(), $localeInfo['language'], $localeInfo['country']);
                 $page = $service->addHomePage($locale, $pageTemplate, $cName === '' ? 'Home' : $cName, $cHandle);

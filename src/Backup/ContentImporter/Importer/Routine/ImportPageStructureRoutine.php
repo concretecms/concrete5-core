@@ -1,6 +1,7 @@
 <?php
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
+use Concrete\Core\Entity\Page\PagePath;
 use Concrete\Core\Error\UserMessageException;
 use Concrete\Core\Localization\Locale\Service;
 use Concrete\Core\Page\Page;
@@ -58,7 +59,8 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         $pageElements = $this->sortElementsByPath($pageElements);
         foreach ($pageElements as $pageElement) {
             $localeInfo = $this->extractLocale($pageElement);
-            $this->getOrCreatePage($pageElement, $localeInfo);
+            $page = $this->getOrCreatePage($pageElement, $localeInfo);
+            $this->importAdditionalPagePath($pageElement, $page);
         }
     }
 
@@ -101,47 +103,51 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
                 'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
                 'pkgID' => $package === null ? null : $package->getPackageID(),
             ]);
+            return $page;
+        }
+
+        $slugs = $pathSlugs;
+        $cHandle = array_pop($slugs);
+        if ($slugs === []) {
+            $parent = $this->home;
         } else {
-            $slugs = $pathSlugs;
-            $cHandle = array_pop($slugs);
-            if ($slugs === []) {
-                $parent = $this->home;
-            } else {
-                $parentPagePath = '/' . implode('/', $slugs);
-                $parent = Page::getByPath($parentPagePath, 'RECENT', $this->defaultSiteTree);
-                if ((!$parent || $parent->isError()) && $this->defaultSiteTree !== null) {
-                    $parent = Page::getByPath($parentPagePath, 'RECENT');
-                }
-                if (!$parent || $parent->isError()) {
-                    throw new UserMessageException(t('Missing the page with path %s', $parentPagePath));
-                }
+            $parentPagePath = '/' . implode('/', $slugs);
+            $parent = Page::getByPath($parentPagePath, 'RECENT', $this->defaultSiteTree);
+            if ((!$parent || $parent->isError()) && $this->defaultSiteTree !== null) {
+                $parent = Page::getByPath($parentPagePath, 'RECENT');
             }
-            if ($localeInfo === null || $this->localeAlreadyExists($localeInfo)) {
-                $page = $parent->add($pageType, [
-                    'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
-                    'pkgID' => $package === null ? 0 : $package->getPackageID(),
-                    'cName' => $cName,
-                    'cHandle' => $cHandle,
-                    'cDescription' => $cDescription,
-                    'cDatePublic' => $cDatePublic === '' ? null : $cDatePublic,
-                ], $pageTemplate);
-            } else {
-                if (!$pageTemplate) {
-                    throw new UserMessageException(t('Missing page template when creating the home of a language'));
-                }
-                app('multilingual/detector')->assumeEnabled();
-                $service = app(Service::class);
-                $locale = $service->add($this->home->getSite(), $localeInfo['language'], $localeInfo['country']);
-                $page = $service->addHomePage($locale, $pageTemplate, $cName === '' ? 'Home' : $cName, $cHandle);
-                $page->update([
-                    'cDescription' => $cDescription,
-                    'cDatePublic' => $cDatePublic === '' ? null : $cDatePublic,
-                    'ptID' => $pageType === null ? null : $pageType->getPageTypeID(),
-                    'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
-                    'pkgID' => $package === null ? 0 : $package->getPackageID(),
-                ]);
+            if (!$parent || $parent->isError()) {
+                throw new UserMessageException(t('Missing the page with path %s', $parentPagePath));
             }
         }
+        if ($localeInfo === null || $this->localeAlreadyExists($localeInfo)) {
+            $page = $parent->add($pageType, [
+                'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+                'pkgID' => $package === null ? 0 : $package->getPackageID(),
+                'cName' => $cName,
+                'cHandle' => $cHandle,
+                'cDescription' => $cDescription,
+                'cDatePublic' => $cDatePublic === '' ? null : $cDatePublic,
+            ], $pageTemplate);
+            return $page;
+        }
+
+        if (!$pageTemplate) {
+            throw new UserMessageException(t('Missing page template when creating the home of a language'));
+        }
+        app('multilingual/detector')->assumeEnabled();
+        $service = app(Service::class);
+        $locale = $service->add($this->home->getSite(), $localeInfo['language'], $localeInfo['country']);
+        $page = $service->addHomePage($locale, $pageTemplate, $cName === '' ? 'Home' : $cName, $cHandle);
+        $page->update([
+            'cDescription' => $cDescription,
+            'cDatePublic' => $cDatePublic === '' ? null : $cDatePublic,
+            'ptID' => $pageType === null ? null : $pageType->getPageTypeID(),
+            'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+            'pkgID' => $package === null ? 0 : $package->getPackageID(),
+        ]);
+
+        return $page;
     }
 
     private function extractLocale(SimpleXMLElement $pageElement)
@@ -197,5 +203,21 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         }
 
         return false;
+    }
+
+    private function importAdditionalPagePath(SimpleXMLElement $pageElement, Page $page)
+    {
+        if (!isset($pageElement->{'additional-path'})) {
+            return;
+        }
+        $em = app(EntityManagerInterface::class);
+        foreach ($pageElement->{'additional-path'} as $additionalPathElement) {
+            $additionalPath = '/' . trim((string) $additionalPathElement['path'], '/');
+            $pagePath = new PagePath();
+            $pagePath->setPagePath($additionalPath);
+            $pagePath->setPageObject($page);
+            $em->persist($pagePath);
+        }
+        $em->flush();
     }
 }

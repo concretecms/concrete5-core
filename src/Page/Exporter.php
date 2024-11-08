@@ -27,6 +27,7 @@ class Exporter implements ItemInterface
         if ($locale !== null) {
             $this->exportLocaleRoot($p, $locale);
         }
+        $this->exportAdditionalPagePaths($p, $mixed);
         $hrefLangMap = $this->getHrefLangMap($mixed);
         if ($hrefLangMap !== []) {
             $this->exportHrefLangMap($p, $hrefLangMap);
@@ -99,6 +100,14 @@ class Exporter implements ItemInterface
         $country = (string) $locale->getCountry();
         if ($country !== '') {
             $localeElement->addAttribute('country', $country);
+        }
+    }
+
+    private function exportAdditionalPagePaths(SimpleXMLElement $parentElement, Page $page)
+    {
+        foreach ($page->getAdditionalPagePaths() as $additionalPath) {
+            $additionalPathElement = $parentElement->addChild('additional-path');
+            $additionalPathElement->addAttribute('path', $additionalPath->getPagePath());
         }
     }
 

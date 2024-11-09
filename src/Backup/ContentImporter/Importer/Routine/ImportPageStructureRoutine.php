@@ -260,17 +260,15 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         if ($parent === null) {
             return t('Missing the page with path %s', $parentPagePath);
         }
-        $cID = $parent->addCollectionAliasExternal(
+        $page = $parent->addExternalLink(
             (string) $externalLinkElement['name'],
             (string) $externalLinkElement['destination'],
-            filter_var((string) $externalLinkElement['new-window'], FILTER_VALIDATE_BOOLEAN)
+            [
+                'newWindow' => filter_var((string) $externalLinkElement['new-window'], FILTER_VALIDATE_BOOLEAN),
+                'handle' => $cHandle,
+                'uID' => $this->resolveUserName($externalLinkElement['user']),
+            ]
         );
-        $page = Page::getByID($cID);
-        if ($page->getCollectionHandle() !== $cHandle) {
-            $page->update([
-                'cHandle' => $cHandle,
-            ]);
-        }
 
         return $page;
     }

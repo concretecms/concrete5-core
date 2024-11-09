@@ -897,57 +897,64 @@ class Page extends Collection implements \Concrete\Core\Permission\ObjectInterfa
     }
 
     /**
-     * Add a new external link as a child of this page.
-     *
-     * @param string $cName
-     * @param string $cLink
-     * @param bool $newWindow
-     *
-     * @return int The ID of the new collection
+     * @deprecated Use addExternalLink()
      */
     public function addCollectionAliasExternal($cName, $cLink, $newWindow = 0)
     {
+        return $this->addExternalLink($cName, $cLink, ['newWindow' => $newWindow])->getCollectionID();
+    }
+
+    /**
+     * Add a new external link as a child of this page.
+     *
+     * @param string $name The name of the link
+     * @param string $link The target of the link
+     * @param array $options available keys:
+     * - newWindow: should the link be opened in a new window (default: false)
+     * - handle: the handle of the link to be created (default: derive it from $name)
+     * - uID: the ID of the user that's creating the external link (default: the ID of the current user)
+     *
+     * @return \Concrete\Core\Page\Page The newly created page
+     */
+    public function addExternalLink($name, $link, array $options = [])
+    {
         $app = Application::getFacadeApplication();
-        $db = Database::connection();
-        $dt = Core::make('helper/text');
-        $ds = Core::make('helper/security');
-        $u = $app->make(User::class);
+        $db = $app->make(Connection::class);
 
-        $cParentID = $this->getCollectionID();
-        $uID = $u->getUserID();
-
-        // make the handle out of the title
-        $cLink = $ds->sanitizeURL($cLink);
-        $handle = $dt->urlify($cName);
-        $data = [
-            'handle' => $handle,
-            'name' => $cName,
-        ];
-        $cobj = parent::addCollection($data);
-        $newCID = $cobj->getCollectionID();
-
-        if ($newWindow) {
-            $newWindow = 1;
-        } else {
-            $newWindow = 0;
+        $link = $app->make('helper/security')->sanitizeURL($link);
+        $newWindow = empty($options['newWindow']) ? 0 : 1;
+        $handle = empty($options['handle']) ? '' : (string) $options['handle'];
+        if ($handle === '') {
+            $handle = $app->make('helper/text')->urlify($name);
         }
+        $uID = empty($options['uID']) ? 0 : (int) $options['uID'];
+        if ($uID === 0) {
+            $uID = $app->make(User::class)->getUserID();
+        }
+        $cParentID = $this->getCollectionID();
+        $siteTreeID = $this->getSiteTreeID() ?: $app->make('site')->getSite()->getSiteTreeID();
+        $displayOrder = $this->getNextSubPageDisplayOrder();
 
-        $cInheritPermissionsFromCID = $this->getPermissionsCollectionID();
-        $cInheritPermissionsFrom = 'PARENT';
-
-        $siteTreeID = \Core::make('site')->getSite()->getSiteTreeID();
-
-        $v = [$newCID, $siteTreeID, $cParentID, $uID, $cInheritPermissionsFrom, (int) $cInheritPermissionsFromCID, $cLink, $newWindow];
-        $q = 'insert into Pages (cID, siteTreeID, cParentID, uID, cInheritPermissionsFrom, cInheritPermissionsFromCID, cPointerExternalLink, cPointerExternalLinkNewWindow) values (?, ?, ?, ?, ?, ?, ?, ?)';
-        $r = $db->prepare($q);
-
-        $r->execute($v);
-
+        $collection = $this->addCollection([
+            'handle' => $handle,
+            'name' => $name,
+        ]);
+        $newCID = $collection->getCollectionID();
+        $db->insert('Pages', [
+            'cID' => $newCID,
+            'siteTreeID' => $siteTreeID,
+            'cParentID' => $cParentID,
+            'uID' => $uID,
+            'cInheritPermissionsFrom' => 'PARENT',
+            'cInheritPermissionsFromCID' => (int) (int) $this->getPermissionsCollectionID(),
+            'cPointerExternalLink' => $link,
+            'cPointerExternalLinkNewWindow' => $newWindow,
+            'cDisplayOrder' => $displayOrder,
+        ]);
         PageStatistics::incrementParents($newCID);
+        $newPage = Page::getByID($newCID);
 
-        self::getByID($newCID)->movePageDisplayOrderToBottom();
-
-        return $newCID;
+        return $newPage;
     }
 
     /**

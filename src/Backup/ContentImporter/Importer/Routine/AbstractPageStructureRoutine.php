@@ -1,6 +1,7 @@
 <?php
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
+use Closure;
 use SimpleXMLElement;
 
 abstract class AbstractPageStructureRoutine extends AbstractRoutine
@@ -32,10 +33,16 @@ abstract class AbstractPageStructureRoutine extends AbstractRoutine
     /**
      * @param \SimpleXMLElement[] $elements
      */
-    protected function sortElementsByPath(array $elements)
+    protected function sortElementsByPath(array $elements, Closure $customComparer = null)
     {
         $sortedElements = $elements;
-        usort($sortedElements, static function (SimpleXMLElement $a, SimpleXMLElement $b) use (&$elements) {
+        usort($sortedElements, static function (SimpleXMLElement $a, SimpleXMLElement $b) use (&$elements, $customComparer) {
+            if ($customComparer !== null) {
+                $cmp = $customComparer($a, $b);
+                if ($cmp) {
+                    return $cmp;
+                }
+            }
             $pathA = trim((string) $a['path'], '/');
             $pathB = trim((string) $b['path'], '/');
             $numA = $pathA === '' ? -1 : substr_count($pathA, '/');

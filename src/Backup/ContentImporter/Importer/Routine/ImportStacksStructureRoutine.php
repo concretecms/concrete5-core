@@ -48,18 +48,18 @@ class ImportStacksStructureRoutine extends AbstractPageStructureRoutine implemen
         foreach ($sx->stacks->children() as $child) {
             $nodes[] = $child;
         }
-        $nodes = $this->sortElementsByPath($nodes);
-        for ($step = 1; $step <= 2; $step++) {
-            foreach ($nodes as $p) {
-                $this->importElement($p, $step);
-            }
+        $nodes = $this->sortElementsByPath($nodes, static function (SimpleXMLElement $a, SimpleXMLElement $b) {
+            $cmpA = $a->getName() === 'folder' ? 0 : 1;
+            $cmpB = $b->getName() === 'folder' ? 0 : 1;
+
+            return $cmpA - $cmpB;
+        });
+        foreach ($nodes as $p) {
+            $this->importElement($p);
         }
     }
 
-    /**
-     * @param int $step 1: folders, 2: anything else
-     */
-    private function importElement(SimpleXMLElement $p, $step)
+    private function importElement(SimpleXMLElement $p)
     {
         $name = (string) $p['name'];
         $path = '/' . trim((string) $p['path'], '/');
@@ -70,29 +70,23 @@ class ImportStacksStructureRoutine extends AbstractPageStructureRoutine implemen
         }
         switch ($type) {
             case 'global_area':
-                if ($step === 2) {
-                    $globalArea = Stack::getByName($name, 'RECENT', $this->siteTree);
-                    if (!$globalArea) {
-                        Stack::addGlobalArea($name, $this->siteTree);
-                    }
+                $globalArea = Stack::getByName($name, 'RECENT', $this->siteTree);
+                if (!$globalArea) {
+                    Stack::addGlobalArea($name, $this->siteTree);
                 }
                 break;
             case 'folder':
-                if ($step === 1) {
-                    $parentFolder = $this->getOrCreateFolderByPath($path);
-                    $folderPath = rtrim($path, '/') . '/' . $name;
-                    if (!array_key_exists($folderPath, $this->getExistingFolders())) {
-                        $this->createFolder($name, $folderPath, $parentFolder);
-                    }
+                $parentFolder = $this->getOrCreateFolderByPath($path);
+                $folderPath = rtrim($path, '/') . '/' . $name;
+                if (!array_key_exists($folderPath, $this->getExistingFolders())) {
+                    $this->createFolder($name, $folderPath, $parentFolder);
                 }
                 break;
             default:
                 // Stack
-                if ($step === 2) {
-                    $parent = $this->getOrCreateFolderByPath($path);
-                    if ($this->getStackIDByName($name, $parent) === null) {
-                        Stack::addStack($name, $parent);
-                    }
+                $parent = $this->getOrCreateFolderByPath($path);
+                if ($this->getStackIDByName($name, $parent) === null) {
+                    Stack::addStack($name, $parent);
                 }
                 break;
         }

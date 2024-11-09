@@ -804,8 +804,7 @@ class Page extends Collection implements \Concrete\Core\Permission\ObjectInterfa
     /**
      * Make an alias to a page.
      *
-     * @param \Concrete\Core\Page\Page $parentPage The parent page
-     * @param mixed $c
+     * @param \Concrete\Core\Page\Page $c The parent page that will contain the alias
      *
      * @return int The ID of the new collection
      */
@@ -813,7 +812,6 @@ class Page extends Collection implements \Concrete\Core\Permission\ObjectInterfa
     {
         $app = Application::getFacadeApplication();
         $db = Database::connection();
-        // the passed collection is the parent collection
         $cParentID = $c->getCollectionID();
 
         $u = $app->make(User::class);

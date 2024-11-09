@@ -43,11 +43,11 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         if (!isset($sx->pages)) {
             return;
         }
-        $childElements = [];
-        foreach ($sx->pages->children() as $childElement) {
-            $childElements[] = $childElement;
+        $elements = [];
+        foreach ($sx->pages->children() as $element) {
+            $elements[] = $element;
         }
-        if ($childElements === []) {
+        if ($elements === []) {
             return;
         }
         if (!$this->home || $this->home->isError()) {
@@ -57,23 +57,48 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             }
         }
         $this->defaultSiteTree = $this->home->getSiteTreeObject();
-        $childElements = $this->sortElementsByPath($childElements);
-        foreach ($childElements as $childElement) {
-            switch ($childElement->getName()) {
-                case 'page':
-                    $localeInfo = $this->extractLocale($childElement);
-                    $page = $this->getOrCreatePage($childElement, $localeInfo);
-                    $this->importAdditionalPagePaths($childElement, $page);
-                    break;
-                case 'external-link':
-                    $this->importExternalLink($childElement);
-                    break;
+        $elements = $this->sortElementsByPath($elements);
+        while ($elements !== []) {
+            $delayed = [];
+            $errorMessages = [];
+            foreach ($elements as $element) {
+                $importResult = null;
+                switch ($element->getName()) {
+                    case 'page':
+                        $localeInfo = $this->extractLocale($element);
+                        $importResult = $this->getOrCreatePage($element, $localeInfo);
+                        if (is_object($importResult)) {
+                            $this->importAdditionalPagePaths($element, $importResult);
+                        }
+                        break;
+                    case 'external-link':
+                        $importResult = $this->importExternalLink($element);
+                        break;
+                    case 'alias':
+                        $importResult = $this->importAlias($element);
+                        break;
+                }
+                if (is_string($importResult)) {
+                    $delayed[] = $element;
+                    $errorMessages[] = $importResult;
+                }
             }
+            if (count($delayed) == count($elements)) {
+                throw new UserMessageException(implode("\n", $errorMessages));
+            }
+            $elements = $delayed;
+            $this->clearPageCache();
         }
     }
 
+    private function clearPageCache()
+    {
+        $cache = app('cache/request');
+        $cache->flush();
+    }
+
     /**
-     * @return \Concrete\Core\Page\Page
+     * @return \Concrete\Core\Page\Page|string returns a string describing why we should import the page later on, or the created page otherwise
      */
     private function getOrCreatePage(SimpleXMLElement $pageElement, array $localeInfo = null)
     {
@@ -92,13 +117,10 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             $page = $this->home;
         } else {
             $pagePath = '/' . implode('/', $pathSlugs);
-            $page = Page::getByPath($pagePath, 'RECENT', $this->defaultSiteTree);
-            if (!$page || $page->isError() && $this->defaultSiteTree === null) {
-                $page = Page::getByPath($pagePath, 'RECENT');
-            }
+            $page = $this->getPageByPath($pagePath, 'RECENT');
         }
 
-        if ($page && !$page->isError()) {
+        if ($page !== null) {
             if ($localeInfo !== null) {
                 $this->updateExistingLocale($page, $localeInfo);
             }
@@ -120,12 +142,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             $parent = $this->home;
         } else {
             $parentPagePath = '/' . implode('/', $slugs);
-            $parent = Page::getByPath($parentPagePath, 'RECENT', $this->defaultSiteTree);
-            if ((!$parent || $parent->isError()) && $this->defaultSiteTree !== null) {
-                $parent = Page::getByPath($parentPagePath, 'RECENT');
-            }
-            if (!$parent || $parent->isError()) {
-                throw new UserMessageException(t('Missing the page with path %s', $parentPagePath));
+            $parent = $this->getPageByPath($parentPagePath);
+            if ($parent === null) {
+                return (t('Missing the page with path %s', $parentPagePath));
             }
         }
         if ($localeInfo === null || $this->localeAlreadyExists($localeInfo)) {
@@ -229,6 +248,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         $em->flush();
     }
 
+    /**
+     * @return \Concrete\Core\Page\Page|null returns NULL if the parent page doesn't exist yet
+     */
     private function importExternalLink(SimpleXMLElement $externalLinkElement)
     {
         $slugs = preg_split('{/}', (string) $externalLinkElement['path'], -1, PREG_SPLIT_NO_EMPTY);
@@ -237,12 +259,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             throw new UserMessageException(t('Missing the path of the external link'));
         }
         $parentPagePath = '/' . implode('/', $slugs);
-        $parent = Page::getByPath($parentPagePath, 'RECENT', $this->defaultSiteTree);
-        if ((!$parent || $parent->isError()) && $this->defaultSiteTree !== null) {
-            $parent = Page::getByPath($parentPagePath, 'RECENT');
-        }
-        if (!$parent || $parent->isError()) {
-            throw new UserMessageException(t('Missing the page with path %s', $parentPagePath));
+        $parent = $this->getPageByPath($parentPagePath);
+        if ($parent === null) {
+            return t('Missing the page with path %s', $parentPagePath);
         }
         $cID = $parent->addCollectionAliasExternal(
             (string) $externalLinkElement['name'],
@@ -255,5 +274,61 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
                 'cHandle' => $cHandle,
             ]);
         }
+
+        return $page;
+    }
+
+    /**
+     * @return \Concrete\Core\Page\Page|null returns NULL if the parent page and/or the original page don't exist yet
+     */
+    private function importAlias(SimpleXMLElement $aliasElement)
+    {
+        $slugs = preg_split('{/}', (string) $aliasElement['path'], -1, PREG_SPLIT_NO_EMPTY);
+        $cHandle = array_pop($slugs);
+        if ($cHandle === null) {
+            throw new UserMessageException(t('Missing the path of the external link'));
+        }
+        $parentPagePath = '/' . implode('/', $slugs);
+        $parentPage = $this->getPageByPath($parentPagePath);
+        if ($parentPage === null) {
+            return t('Missing the page with path %s', $parentPagePath);
+        }
+        $originalPagePath = '/' . trim((string) $aliasElement['original-path'], '/');
+        $originalPage = $this->getPageByPath($originalPagePath);
+        if ($originalPage === null) {
+            return t('Missing the page with path %s', $originalPagePath);
+        }
+        $userName = (string) $aliasElement['user'];
+        $userInfo = $userName === '' ? null : app(UserInfoRepository::class)->getByName($userName);
+        $alias = $originalPage->createAlias($parentPage, [
+            'name' => (string) $aliasElement['name'],
+            'handle' => $cHandle,
+            'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+        ]);
+
+        return $alias;
+    }
+
+    /**
+     * @return \Concrete\Core\Page\Page|null
+     */
+    private function getPageByPath($path)
+    {
+        $path = '/' . trim($path, '/');
+        if ($path === '/') {
+            return $this->home;
+        }
+        $page = Page::getByPath($path, 'RECENT', $this->defaultSiteTree);
+        if ($page && !$page->isError()) {
+            return $page;
+        }
+        if ($this->defaultSiteTree !== null) {
+            $page = Page::getByPath($path, 'RECENT');
+            if ($page && !$page->isError()) {
+                return $page;
+            }
+        }
+
+        return null;
     }
 }

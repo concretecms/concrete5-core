@@ -2,10 +2,13 @@
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
 use Closure;
+use Concrete\Core\User\UserInfoRepository;
 use SimpleXMLElement;
 
 abstract class AbstractPageStructureRoutine extends AbstractRoutine
 {
+    private $resolvedUserNames = [];
+
     /**
      * @deprecated use sortElementsByPath()
      */
@@ -57,5 +60,24 @@ abstract class AbstractPageStructureRoutine extends AbstractRoutine
         });
 
         return array_values($sortedElements);
+    }
+
+    /**
+     * @param string|\SimpleXMLElement|null $userName
+     */
+    protected function resolveUserName($userName)
+    {
+        $userName = (string) $userName;
+        if ($userName === '') {
+            return USER_SUPER_ID;
+        }
+        if (isset($this->resolvedUserNames[$userName])) {
+            return $this->resolvedUserNames[$userName];
+        }
+        $userInfo = app(UserInfoRepository::class)->getByName($userName);
+        $userID = $userInfo === null ? USER_SUPER_ID : (int) $userInfo->getUserID();
+        $this->resolvedUserNames[$userName] = $userID;
+
+        return $userID;
     }
 }

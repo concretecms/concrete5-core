@@ -7,7 +7,6 @@ use Concrete\Core\Localization\Locale\Service;
 use Concrete\Core\Page\Page;
 use Concrete\Core\Page\Template;
 use Concrete\Core\Page\Type\Type;
-use Concrete\Core\User\UserInfoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use SimpleXMLElement;
 
@@ -102,8 +101,6 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
      */
     private function getOrCreatePage(SimpleXMLElement $pageElement, array $localeInfo = null)
     {
-        $userName = (string) $pageElement['user'];
-        $userInfo = $userName === '' ? null : app(UserInfoRepository::class)->getByName($userName);
         $package = static::getPackageObject($pageElement['package']);
         $cName = isset($pageElement['name']) ? (string) $pageElement['name'] : '';
         $cDescription = isset($pageElement['description']) ? (string) $pageElement['description'] : '';
@@ -130,7 +127,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
                 'cDatePublic' => $cDatePublic === '' ? null : $cDatePublic,
                 'ptID' => $pageType === null ? null : $pageType->getPageTypeID(),
                 'pTemplateID' => $pageTemplate === null ? null : $pageTemplate->getPageTemplateID(),
-                'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+                'uID' => $this->resolveUserName($pageElement['user']),
                 'pkgID' => $package === null ? null : $package->getPackageID(),
             ]);
             return $page;
@@ -149,7 +146,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         }
         if ($localeInfo === null || $this->localeAlreadyExists($localeInfo)) {
             $page = $parent->add($pageType, [
-                'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+                'uID' => $this->resolveUserName($pageElement['user']),
                 'pkgID' => $package === null ? 0 : $package->getPackageID(),
                 'cName' => $cName,
                 'cHandle' => $cHandle,
@@ -170,7 +167,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             'cDescription' => $cDescription,
             'cDatePublic' => $cDatePublic === '' ? null : $cDatePublic,
             'ptID' => $pageType === null ? null : $pageType->getPageTypeID(),
-            'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+            'uID' => $this->resolveUserName($pageElement['user']),
             'pkgID' => $package === null ? 0 : $package->getPackageID(),
         ]);
 
@@ -298,12 +295,10 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         if ($originalPage === null) {
             return t('Missing the page with path %s', $originalPagePath);
         }
-        $userName = (string) $aliasElement['user'];
-        $userInfo = $userName === '' ? null : app(UserInfoRepository::class)->getByName($userName);
         $alias = $originalPage->createAlias($parentPage, [
             'name' => (string) $aliasElement['name'],
             'handle' => $cHandle,
-            'uID' => $userInfo === null ? USER_SUPER_ID : $userInfo->getUserID(),
+            'uID' => $this->resolveUserName($aliasElement['user']),
         ]);
 
         return $alias;

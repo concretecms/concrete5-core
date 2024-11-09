@@ -802,58 +802,76 @@ class Page extends Collection implements \Concrete\Core\Permission\ObjectInterfa
     }
 
     /**
-     * Make an alias to a page.
-     *
-     * @param \Concrete\Core\Page\Page $c The parent page that will contain the alias
-     *
-     * @return int The ID of the new collection
+     * @deprecated Use the createAlias() method
      */
     public function addCollectionAlias($c)
     {
+        return $this->createAlias($c)->getCollectionPointerOriginalID();
+    }
+
+    /**
+     * Make an alias to a page.
+     *
+     * @param \Concrete\Core\Page\Page $parentPage The page that will contain the alias
+     * @param array $options available keys:
+     * - name: the name of the alias  (default: the original page name)
+     * - handle: the handle of the alias to be created (default: the original page handle)
+     * - uID: the ID of the user that's creating the alias (default: the ID of the current user)
+     *
+     * @return \Concrete\Core\Page\Page
+     */
+    public function createAlias(Page $parentPage, array $options = [])
+    {
         $app = Application::getFacadeApplication();
-        $db = Database::connection();
-        $cParentID = $c->getCollectionID();
-
-        $u = $app->make(User::class);
-        $uID = $u->getUserID();
-
-        $handle = (string) $this->getCollectionHandle();
+        $db = $app->make(Connection::class);
+        $cParentID = $parentPage->getCollectionID();
+        $uID = empty($options['uID']) ? 0 : (int) $options['uID'];
+        if ($uID === 0) {
+            $u = $app->make(User::class);
+            $uID = $u->getUserID();
+        }
+        $handle = empty($options['handle']) ? '' : (string) $options['handle'];
         if ($handle === '') {
-            $handle = Core::make('helper/text')->handle($this->getCollectionName());
+            $handle = (string) $this->getCollectionHandle();
+            if ($handle === '') {
+                $handle = $app->make('helper/text')->handle($this->getCollectionName());
+            }
         }
-        $cDisplayOrder = $c->getNextSubPageDisplayOrder();
-
-        $_cParentID = $c->getCollectionID();
-        $q = 'select PagePaths.cPath from PagePaths where cID = ?';
-        $v = [$_cParentID];
-        if ($_cParentID != static::getHomePageID()) {
-            $q .= ' and ppIsCanonical = ?';
-            $v[] = 1;
+        $name = empty($options['name']) ? '' : (string) $options['name'];
+        if ($name === '') {
+            $name = $this->getCollectionName();
         }
-        $cPath = $db->fetchColumn($q, $v);
-
-        $data = [
+        $cDisplayOrder = $parentPage->getNextSubPageDisplayOrder();
+        $cPath = $db->fetchColumn(
+            'SELECT cPath FROM PagePaths WHERE cID = ? ORDER BY ppIsCanonical DESC',
+            [$cParentID]
+        );
+        $collection = $this->addCollection([
             'handle' => $handle,
-            'name' => $this->getCollectionName(),
-        ];
-        $cobj = parent::addCollection($data);
-        $newCID = $cobj->getCollectionID();
-        $siteTreeID = $c->getSiteTreeID();
-
-        $v = [$newCID, $siteTreeID, $cParentID, $uID, $this->getCollectionID(), $cDisplayOrder];
-        $q = 'insert into Pages (cID, siteTreeID, cParentID, uID, cPointerID, cDisplayOrder) values (?, ?, ?, ?, ?, ?)';
-        $r = $db->prepare($q);
-
-        $r->execute($v);
-
+            'name' => $name,
+        ]);
+        $newCID = $collection->getCollectionID();
+        $siteTreeID = $parentPage->getSiteTreeID();
+        $db->insert('Pages', [
+            'cID' => $newCID,
+            'siteTreeID' => $siteTreeID,
+            'cParentID' => $cParentID,
+            'uID' => $uID,
+            'cPointerID' => $this->getCollectionID(),
+            'cDisplayOrder' => $cDisplayOrder,
+        ]);
+        $db->insert('PagePaths', [
+            'cID' => $newCID,
+            'cPath' => $cPath . '/' . $handle,
+            'ppIsCanonical' => 1,
+            'ppGeneratedFromURLSlugs' => 1,
+        ]);
         PageStatistics::incrementParents($newCID);
-
-        $q2 = 'insert into PagePaths (cID, cPath, ppIsCanonical, ppGeneratedFromURLSlugs) values (?, ?, ?, ?)';
-        $v2 = [$newCID, $cPath . '/' . $handle, 1, 1];
-        $db->executeQuery($q2, $v2);
-        $pe = new Event(\Page::getByID($newCID));
+        $newPage = Page::getByID($newCID);
+        $pe = new Event($newPage);
         Events::dispatch('on_page_alias_add', $pe);
-        return $newCID;
+
+        return $newPage;
     }
 
     /**

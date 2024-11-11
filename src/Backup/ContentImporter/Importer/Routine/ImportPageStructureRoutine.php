@@ -1,6 +1,7 @@
 <?php
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
+use Concrete\Core\Database\Connection\Connection;
 use Concrete\Core\Entity\Page\PagePath;
 use Concrete\Core\Error\UserMessageException;
 use Concrete\Core\Localization\Locale\Service;
@@ -246,7 +247,10 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
     }
 
     /**
-     * @return \Concrete\Core\Page\Page|null returns NULL if the parent page doesn't exist yet
+     * @return \Concrete\Core\Page\Page|string|null returns:
+     * - NULL if there's already a collection with the same handle
+     * - a string if the parent page doesn't exist yet
+     * - the newly created page otherwise
      */
     private function importExternalLink(SimpleXMLElement $externalLinkElement)
     {
@@ -259,6 +263,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         $parent = $this->getPageByPath($parentPagePath);
         if ($parent === null) {
             return t('Missing the page with path %s', $parentPagePath);
+        }
+        if ($this->parentPageHasChildWithHandle($parent, $cHandle)) {
+            return null;
         }
         $page = $parent->addExternalLink(
             (string) $externalLinkElement['name'],
@@ -274,7 +281,10 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
     }
 
     /**
-     * @return \Concrete\Core\Page\Page|null returns NULL if the parent page and/or the original page don't exist yet
+     * @return \Concrete\Core\Page\Page|string|null returns:
+     * - NULL if there's already a collection with the same handle
+     * - a string if the parent page and/or the original page don't exist yet
+     * - the newly created page otherwise
      */
     private function importAlias(SimpleXMLElement $aliasElement)
     {
@@ -287,6 +297,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         $parentPage = $this->getPageByPath($parentPagePath);
         if ($parentPage === null) {
             return t('Missing the page with path %s', $parentPagePath);
+        }
+        if ($this->parentPageHasChildWithHandle($parentPage, $cHandle)) {
+            return null;
         }
         $originalPagePath = '/' . trim((string) $aliasElement['original-path'], '/');
         $originalPage = $this->getPageByPath($originalPagePath);
@@ -323,5 +336,35 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         }
 
         return null;
+    }
+
+    /**
+     * @param string $childHandle
+     *
+     * @return bool
+     */
+    private function parentPageHasChildWithHandle(Page $parentPage, $childHandle)
+    {
+        $cn = app(Connection::class);
+        $cID = $cn->fetchColumn(
+            <<<'EOT'
+SELECT
+    Pages.cID
+FROM
+    Pages
+    INNER JOIN Collections ON Pages.cID = Collections.cID
+WHERE
+    Pages.cParentID = :parentPageID
+    AND Collections.cHandle = :childHandle
+LIMIT 1
+EOT
+            ,
+            [
+                'parentPageID' => $parentPage->getCollectionID(),
+                'childHandle' => $childHandle,
+            ]
+        );
+
+        return $cID ? true : false;
     }
 }

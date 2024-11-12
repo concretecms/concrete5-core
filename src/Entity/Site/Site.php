@@ -76,7 +76,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface,
     protected $siteHandle;
 
     /**
-     * The language sections of this site.
+     * The locale sections of this site.
      *
      * @ORM\OneToMany(targetEntity="Locale", cascade={"all"}, mappedBy="site")
      * @ORM\JoinColumn(name="siteLocaleID", referencedColumnName="siteLocaleID")
@@ -239,7 +239,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface,
     }
 
     /**
-     * Get the language sections of this site.
+     * Get the locale sections of this site.
      *
      * @return \Concrete\Core\Entity\Site\Locale[]|\Doctrine\Common\Collections\ArrayCollection
      */
@@ -249,7 +249,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface,
     }
 
     /**
-     * Set the language sections of this site.
+     * Set the locale sections of this site.
      *
      * @param \Concrete\Core\Entity\Site\Locale[]|\Doctrine\Common\Collections\ArrayCollection $locales
      */
@@ -289,7 +289,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface,
      */
     public function getDefaultLocale()
     {
-        foreach ($this->locales as $locale) {
+        foreach ($this->getLocales() as $locale) {
             if ($locale->getIsDefault()) {
                 return $locale;
             }
@@ -313,7 +313,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface,
     }
 
     /**
-     * Get the home page of the default language.
+     * Get the home page of the default locale.
      *
      * @param string|int $version 'ACTIVE', 'RECENT' or a specific page version ID
      *

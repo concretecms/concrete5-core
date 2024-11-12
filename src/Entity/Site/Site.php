@@ -285,6 +285,21 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface,
     }
 
     /**
+     * Get the IDs of every tree of this site.
+     *
+     * @return int[]  The first one is the ID of default site tree
+     */
+    public function getSiteTreeIDs(): array
+    {
+        return array_map(
+            static function ($siteTree) {
+                return (int) $siteTree->getSiteTreeID();
+            },
+            $this->getSiteTreeObjects()
+        );
+    }
+
+    /**
      * Get the default locale (if set).
      *
      * @return \Concrete\Core\Entity\Site\Locale|null
@@ -314,6 +329,28 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface,
         }
 
         return $locale === null ? null : $locale->getSiteTree();
+    }
+
+    /**
+     * Get the trees of every locale of this site.
+     *
+     * @return \Concrete\Core\Entity\Site\SiteTree[] The first one is the default site tree
+     */
+    public function getSiteTreeObjects(): array
+    {
+        $defaultSiteTree = $this->getSiteTreeObject();
+        if ($defaultSiteTree === null) {
+            return [];
+        }
+        $result = [$defaultSiteTree];
+        foreach ($this->getLocales() as $locale) {
+            $siteTree = $locale->getSiteTree();
+            if ($siteTree !== null && !in_array($siteTree, $result, true)) {
+                $result[] = $siteTree;
+            }
+        }
+
+        return $result;
     }
 
     /**

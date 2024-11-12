@@ -251,7 +251,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
-     * Get the ID of the home page.
+     * Get the ID of the home page of the default locale.
      *
      * @return int|null
      */
@@ -263,6 +263,8 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
+     * Get the ID of the tree of the default locale.
+     *
      * {@inheritdoc}
      *
      * @see \Concrete\Core\Site\Tree\TreeInterface::getSiteTreeID()
@@ -289,6 +291,8 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
+     * Get the tree of the default locale.
+     *
      * {@inheritdoc}
      *
      * @see \Concrete\Core\Site\Tree\TreeInterface::getSiteTreeObject()

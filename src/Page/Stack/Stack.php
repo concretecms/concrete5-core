@@ -3,7 +3,6 @@ namespace Concrete\Core\Page\Stack;
 
 use Concrete\Core\Area\Area;
 use Concrete\Core\Multilingual\Page\Section\Section;
-use Concrete\Core\Multilingual\Service\Detector as MultilingualDetector;
 use Concrete\Core\Page\Collection\Collection;
 use Concrete\Core\Page\Stack\Folder\Folder;
 use Concrete\Core\Permission\Checker;
@@ -66,48 +65,32 @@ class Stack extends Page
 
         /** @var \Concrete\Core\Cache\Level\RequestCache $requestCache */
         $requestCache = $app->make('cache/request');
-
-        /** @var MultilingualDetector $md */
-        $md = $app->make(MultilingualDetector::class);
-        if ($md->isEnabled()) {
-            $ps = $md->getPreferredSection();
-            $psID = $ps ? $ps->getCollectionID() : 0;
-            $identifier = sprintf('/stack/global_area/%s/%s/cID', $arHandle, $psID);
-        } else {
-            $identifier = sprintf('/stack/global_area/%s/cID', $arHandle);
-        }
+        $identifier = sprintf('/stack/global_area/%s/cID', $arHandle);
         $item = $requestCache->getItem($identifier);
         if ($item->isHit()) {
             $stackID = $item->get();
         } else {
-            $qb = $db->createQueryBuilder();
-            $q = $qb->select('cID')
-                ->from('Stacks', 's')
-                ->andWhere('s.stName = :stName')
-                ->andWhere('s.stType = :stType')
-                ->setParameter('stName', $arHandle)
-                ->setParameter('stType', self::ST_TYPE_GLOBAL_AREA);
-
-            if ($md->isEnabled()) {
-                $ps = $md->getPreferredSection();
-                $psID = $ps ? $ps->getCollectionID() : 0;
-                $q->andWhere('s.stMultilingualSection = :stMultilingualSection');
-                $q->setParameter('stMultilingualSection', $psID);
-            }
-
-            $stackID = $q->execute()->fetchOne();
+            $stackID = $db->executeQuery('select cID from Stacks where stName = ? and stType = ?', [
+                $arHandle, self::ST_TYPE_GLOBAL_AREA
+            ])->fetchOne();
             $requestCache->save($item->set($stackID));
         }
 
-        if ($stackID) {
-            if ($checker->canViewPageVersions()) {
-                $s = Stack::getByID($stackID, 'RECENT');
-            } else {
-                $s = Stack::getByID($stackID, 'ACTIVE');
-            }
-            return $s;
+        if (!$stackID) {
+            return null;
         }
-        return null;
+        $cvID = $checker->canViewPageVersions() ? 'RECENT': 'ACTIVE';
+        $s = Stack::getByID($stackID, $cvID);
+        if (!$s) {
+            return null;
+        }
+        if ($app->make('multilingual/detector')->isEnabled() && $collection instanceof Page) {
+            $section = Section::getBySectionOfSite($collection);
+            if ($section) {
+                $s = $s->getLocalizedStack($section, $cvID) ?: $s;
+            }
+        }
+        return $s;
     }
 
     /**

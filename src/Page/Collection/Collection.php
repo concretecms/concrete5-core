@@ -15,7 +15,6 @@ use Concrete\Core\Database\Connection\Connection;
 use Concrete\Core\Database\Driver\PDOStatement;
 use Concrete\Core\Entity\Attribute\Value\PageValue;
 use Concrete\Core\Foundation\ConcreteObject;
-use Concrete\Core\Multilingual\Service\Detector as MultilingualDetector;
 use Concrete\Core\Page\Cloner;
 use Concrete\Core\Page\ClonerOptions;
 use Concrete\Core\Page\Collection\Version\VersionList;
@@ -976,29 +975,20 @@ public function outputCustomStyleHeaderItems($return = false)
         /** @var Connection $db */
         $db = $app->make(Connection::class);
         $qb = $db->createQueryBuilder();
-        $q = $qb->select('stName')
+        $rs = $qb->select('stName')
             ->from('Stacks', 's')
             ->innerJoin('s', 'Areas', 'a', 'a.arHandle = s.stName')
             ->andWhere('a.arIsGlobal = 1')
             ->andWhere('a.cID = :cID')
             ->andWhere('s.stType = :stType')
             ->setParameter('cID', $this->getCollectionID())
-            ->setParameter('stType', Stack::ST_TYPE_GLOBAL_AREA);
-
-        /** @var MultilingualDetector $md */
-        $md = $app->make(MultilingualDetector::class);
-        if ($md->isEnabled()) {
-            $ps = $md->getPreferredSection();
-            $psID = $ps ? $ps->getCollectionID() : 0;
-            $q->andWhere('s.stMultilingualSection = :stMultilingualSection');
-            $q->setParameter('stMultilingualSection', $psID);
-        }
-
-        $rs = $q->execute()->fetchAll(FetchMode::COLUMN);
+            ->setParameter('stType', Stack::ST_TYPE_GLOBAL_AREA)
+            ->execute()->fetchAll(FetchMode::COLUMN);
 
         $stacks = [];
 
         if (count($rs) > 0) {
+            $pcp = new Permissions($this);
             foreach ($rs as $garHandle) {
                 $s = Stack::getGlobalAreaStackFromName($this, $garHandle);
                 if (is_object($s)) {

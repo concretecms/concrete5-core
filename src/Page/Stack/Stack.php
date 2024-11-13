@@ -88,8 +88,6 @@ class Stack extends Page
                 ->setParameter('stName', $arHandle)
                 ->setParameter('stType', self::ST_TYPE_GLOBAL_AREA);
 
-            /** @var MultilingualDetector $md */
-            $md = app(MultilingualDetector::class);
             if ($md->isEnabled()) {
                 $ps = $md->getPreferredSection();
                 $psID = $ps ? $ps->getCollectionID() : 0;

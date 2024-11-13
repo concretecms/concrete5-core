@@ -128,9 +128,11 @@ class StackList extends PageList
     }
 
     /**
-     * @param $queryRow
+     * {@inheritdoc}
      *
-     * @return \Stack
+     * @see \Concrete\Core\Page\PageList::getResult()
+     *
+     * @return \Concrete\Core\Page\Stack\Stack|\Concrete\Core\Page\Page|null
      */
     public function getResult($queryRow)
     {
@@ -138,5 +140,4 @@ class StackList extends PageList
 
         return $stack ?: parent::getResult($queryRow);
     }
-
 }

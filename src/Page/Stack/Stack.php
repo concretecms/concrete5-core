@@ -66,7 +66,16 @@ class Stack extends Page
 
         /** @var \Concrete\Core\Cache\Level\RequestCache $requestCache */
         $requestCache = $app->make('cache/request');
-        $identifier = sprintf('/stack/global_area/%s/cID', $arHandle);
+
+        /** @var MultilingualDetector $md */
+        $md = app(MultilingualDetector::class);
+        if ($md->isEnabled()) {
+            $ps = $md->getPreferredSection();
+            $psID = $ps ? $ps->getCollectionID() : 0;
+            $identifier = sprintf('/stack/global_area/%s/%s/cID', $arHandle, $psID);
+        } else {
+            $identifier = sprintf('/stack/global_area/%s/cID', $arHandle);
+        }
         $item = $requestCache->getItem($identifier);
         if ($item->isHit()) {
             $stackID = $item->get();

@@ -2287,18 +2287,28 @@ EOT
     /**
      * Get the immediate children of the this page.
      *
+     * @since 9.3.6 Added the $version parameter
+     * @param string $version the page version ('RECENT' for the most recent version, 'ACTIVE' for the currently published version, 'SCHEDULED' for the currently scheduled version, or an integer to retrieve a specific version ID)
      * @return \Concrete\Core\Page\Page[]
      */
-    public function getCollectionChildren()
+    public function getCollectionChildren($version = 'RECENT')
     {
         $children = [];
-        $db = Database::connection();
-        $q = 'select cID from Pages where cParentID = ? and cIsTemplate = 0 order by cDisplayOrder asc';
-        $r = $db->executeQuery($q, [$this->getCollectionID()]);
+        $app = Application::getFacadeApplication();
+        /** @var Connection $connection */
+        $connection = $app->make(Connection::class);
+        $r = $connection->createQueryBuilder()
+            ->select('cID')
+            ->from('Pages')
+            ->where('cParentID = :cParentID')
+            ->andWhere('cIsTemplate = 0')
+            ->orderBy('cDisplayOrder', 'asc')
+            ->setParameter('cParentID', $this->getCollectionID())
+            ->execute();
         if ($r) {
-            while ($row = $r->fetch()) {
+            while ($row = $r->fetchAssociative()) {
                 if ($row['cID'] > 0) {
-                    $c = self::getByID($row['cID']);
+                    $c = self::getByID($row['cID'], $version);
                     $children[] = $c;
                 }
             }

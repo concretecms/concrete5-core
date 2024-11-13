@@ -20,7 +20,7 @@ abstract class MarketplaceDashboardPageController extends DashboardPageControlle
         $repository = $this->app->make(PackageRepositoryInterface::class);
         $coordinator = $this->app->make(PurchaseConnectionCoordinator::class);
         $connection = $repository->getConnection();
-        if ($repository->validate($connection)) {
+        if ($connection !== null && $repository->validate($connection)) {
             // Redirect the url to the marketplace with a verified connection
             $url = $coordinator->createPurchaseConnectionUrl(
                 $connection,

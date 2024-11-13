@@ -209,10 +209,13 @@ class Controller extends BlockController implements UsesFeatureInterface, FileTr
 
     protected function getNavigation(): Navigation
     {
-        $home = $this->getHomePage();
-        $children = $home->getCollectionChildren();
         $navigation = $this->app->make(Navigation::class);
+        if (!$this->includeNavigation) {
+            return $navigation;
+        }
 
+        $home = $this->getHomePage();
+        $children = $home->getCollectionChildren('ACTIVE');
         $current = Page::getCurrentPage();
         $parentIDs = $this->getParentIDsToCurrent();
 
@@ -224,7 +227,7 @@ class Controller extends BlockController implements UsesFeatureInterface, FileTr
                 }
                 $item->setIsActive($current->getCollectionID() === $child->getCollectionID());
                 if ($this->includeSubPagesInNavigation($child)) {
-                    $dropdownChildren = $child->getCollectionChildren();
+                    $dropdownChildren = $child->getCollectionChildren('ACTIVE');
                     foreach ($dropdownChildren as $dropdownChild) {
                         if ($this->includePageInNavigation($dropdownChild)) {
                             $dropdownChildItem = $this->app->make(PageItem::class, ['page' => $dropdownChild]);

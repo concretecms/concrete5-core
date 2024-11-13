@@ -74,8 +74,9 @@ class Controller extends AttributeTypeController implements
                     $topic instanceof \Concrete\Core\Tree\Node\Type\Topic ||
                     $topic instanceof Category)) {
                 $column = 'ak_' . $this->attributeKey->getAttributeKeyHandle();
-                $expressions[] = $expr->like($column, $qb->createNamedParameter('%||' . $topic->getTreeNodeDisplayPath() . '||%'));
-                $expressions[] = $expr->like($column, $qb->createNamedParameter('%||' . $topic->getTreeNodeDisplayPath() . '/%'));
+                $topicPath = rtrim($topic->getTreeNodeDisplayPath(), '/');
+                $expressions[] = $expr->like($column, $qb->createNamedParameter('%||' . $topicPath . '||%'));
+                $expressions[] = $expr->like($column, $qb->createNamedParameter('%||' . $topicPath . '/%'));
             }
         }
 

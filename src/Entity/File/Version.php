@@ -1095,9 +1095,37 @@ class Version implements ObjectInterface
         $fs = $this->getFile()->getFileStorageLocationObject()->getFileSystemObject();
         $response = new FlysystemFileResponse($fre->getPath(), $fs);
 
-        $response->setContentDisposition($contentDisposition);
+        $response->setContentDisposition($contentDisposition, $this->getFileNameForPresentation());
 
         return $response;
+    }
+
+    /**
+     * Return filename by pattern of config "concrete.filesystem.download.filename_pattern"
+     * make possible to use {title} or {filename} as placeholders include custom prefix. If no
+     * pattern is defined, falls back to filename.
+     *
+     * @return string
+     */
+    public function getFileNameForPresentation()
+    {
+        $config = app('config');
+        $pattern = $config->get('concrete.filesystem.download.filename_pattern');
+
+        if (!empty($pattern)) {
+            if (str_contains($pattern, '{title}')) {
+                $pattern = str_replace('{title}', $this->getTitle(), $pattern);
+            }
+            if (str_contains($pattern, '{filename}')) {
+                $pattern = str_replace('{filename}', $this->getFileName(), $pattern);
+            }
+            if (str_contains($pattern, '{extension}')) {
+                $pattern = str_replace('{extension}', $this->getExtension(), $pattern);
+            }
+            return $pattern;
+        } else {
+            return $this->getFileName();
+        }
     }
 
     /**

@@ -983,8 +983,9 @@ public function outputCustomStyleHeaderItems($return = false)
         $md = $app->make(MultilingualDetector::class);
         if ($md->isEnabled()) {
             $ps = $md->getPreferredSection();
+            $psID = $ps ? $ps->getCollectionID() : 0;
             $q->andWhere('s.stMultilingualSection = :stMultilingualSection');
-            $q->setParameter('stMultilingualSection', $ps->getCollectionID());
+            $q->setParameter('stMultilingualSection', $psID);
         }
 
         $rs = $q->execute()->fetchAll(FetchMode::COLUMN);

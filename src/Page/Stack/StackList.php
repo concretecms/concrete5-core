@@ -2,8 +2,9 @@
 namespace Concrete\Core\Page\Stack;
 
 use Concrete\Core\Multilingual\Page\Section\Section;
-use Concrete\Core\Page\Stack\Folder\Folder;
 use Concrete\Core\Page\PageList;
+use Concrete\Core\Page\Stack\Folder\Folder;
+use Concrete\Core\Page\Type\Type;
 use Concrete\Core\Search\StickyRequest;
 use Doctrine\DBAL\Query\QueryBuilder;
 
@@ -18,6 +19,21 @@ class StackList extends PageList
      * @var \Concrete\Core\Multilingual\Page\Section\Section|null
      */
     private $languageSection;
+
+    /**
+     * @var bool
+     */
+    private $includeFolders = true;
+
+    /**
+     * @var bool
+     */
+    private $includeGlobalAreas = true;
+
+    /**
+     * @var bool
+     */
+    private $includeStacks = true;
 
     public function __construct()
     {
@@ -89,19 +105,74 @@ class StackList extends PageList
         $this->filterByParentID($folder->getPage()->getCollectionID());
     }
 
+    /**
+     * @deprecated use setIncludeGlobalAreas(true) + setIncludeStacks(false) + setIncludeFolders(false)
+     */
     public function filterByGlobalAreas()
     {
-        $this->filter('stType', Stack::ST_TYPE_GLOBAL_AREA);
+        $this
+            ->setIncludeFolders(false)
+            ->setIncludeGlobalAreas(true)
+            ->setIncludeStacks(false)
+        ;
     }
 
+    /**
+     * @deprecated use setIncludeGlobalAreas(false)
+     */
     public function excludeGlobalAreas()
     {
-        $this->filter(false, 'stType != '.Stack::ST_TYPE_GLOBAL_AREA.' or stType is null');
+        $this->setIncludeGlobalAreas(false);
+    }
+
+    public function getIncludeFolders(): bool
+    {
+        return $this->includeFolders;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setIncludeFolders(bool $value): self
+    {
+        $this->includeFolders = $value;
+
+        return $this;
+    }
+
+    public function getIncludeGlobalAreas(): bool
+    {
+        return $this->includeGlobalAreas;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setIncludeGlobalAreas(bool $value): self
+    {
+        $this->includeGlobalAreas = $value;
+
+        return $this;
+    }
+
+    public function getIncludeStacks(): bool
+    {
+        return $this->includeStacks;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setIncludeStacks(bool $value): self
+    {
+        $this->includeStacks = $value;
+
+        return $this;
     }
 
     public function filterByUserAdded()
     {
-        $this->filter('stType', Stack::ST_TYPE_USER_ADDED);
+        $this->query->andWhere('s.stType = ' . $this->query->createNamedParameter(Stack::ST_TYPE_USER_ADDED));
     }
 
     public function filterByStackCategory(StackCategory $category)
@@ -123,6 +194,7 @@ class StackList extends PageList
         } else {
             $query->andWhere('s.stMultilingualSection = ' . $query->createNamedParameter($languageSection->getCollectionID()));
         }
+        $this->applyTypeFilter($query);
 
         return $query;
     }
@@ -132,12 +204,39 @@ class StackList extends PageList
      *
      * @see \Concrete\Core\Page\PageList::getResult()
      *
-     * @return \Concrete\Core\Page\Stack\Stack|\Concrete\Core\Page\Page|null
+     * @return \Concrete\Core\Page\Stack\Stack|\Concrete\Core\Page\Page|null returns a Page in case of folders
      */
     public function getResult($queryRow)
     {
         $stack = Stack::getByID($queryRow['cID'], 'ACTIVE');
 
         return $stack ?: parent::getResult($queryRow);
+    }
+
+    protected function applyTypeFilter(QueryBuilder $query)
+    {
+        $folders = $this->getIncludeFolders();
+        $globalAreas = $this->getIncludeGlobalAreas();
+        $stacks = $this->getIncludeStacks();
+        if ($folders && $globalAreas && $stacks) {
+            // No need to filter
+            return;
+        }
+        if (!$folders && !$globalAreas && !$stacks) {
+            // We won't have any result
+            $query->andWhere('1 = 0');
+            return;
+        }
+        $orList = [];
+        if ($folders) {
+            $orList[] = 'p.ptID = ' . $query->createNamedParameter(Type::getByHandle(STACK_CATEGORY_PAGE_TYPE)->getPageTypeID());
+        }
+        if ($globalAreas) {
+            $orList[] = 's.stType = ' . $query->createNamedParameter(Stack::ST_TYPE_GLOBAL_AREA);
+        }
+        if ($stacks) {
+            $orList[] = 's.stType IS NOT NULL AND s.stType <> ' . $query->createNamedParameter(Stack::ST_TYPE_GLOBAL_AREA);
+        }
+        $query->andWhere($query->expr()->or(...$orList));
     }
 }

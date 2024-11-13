@@ -72,6 +72,13 @@ class DashboardStacksBreadcrumbFactory implements ApplicationAwareInterface
                 $breadcrumb->add($stackItem);
             }
             if ($stackOrFolder instanceof Stack) {
+                if ($locale !== '') {
+                    $stackItem = new Item(
+                        '',
+                        $locale
+                    );
+                    $breadcrumb->add($stackItem);
+                }
                 // let's handle the breadcrumb dropdown for localized stacks
                 if ($stackOrFolder->isNeutralStack()) {
                     $neutralStack = $stackOrFolder;

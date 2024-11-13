@@ -68,7 +68,7 @@ class Stack extends Page
         $requestCache = $app->make('cache/request');
 
         /** @var MultilingualDetector $md */
-        $md = app(MultilingualDetector::class);
+        $md = $app->make(MultilingualDetector::class);
         if ($md->isEnabled()) {
             $ps = $md->getPreferredSection();
             $psID = $ps ? $ps->getCollectionID() : 0;

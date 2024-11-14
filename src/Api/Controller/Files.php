@@ -308,7 +308,7 @@ class Files extends ApiController
         }
 
         $checker = new Checker($file);
-        if (!$checker->canEditFile()) {
+        if (!$checker->canEditFileProperties()) {
             return $this->error(t('You do not have access to edit this file.', 401));
         }
 

@@ -3,6 +3,7 @@
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
 use Concrete\Core\Multilingual\Page\Section\Section;
+use Concrete\Core\Page\Page;
 use Concrete\Core\Page\Stack\Stack;
 use SimpleXMLElement;
 
@@ -14,11 +15,6 @@ class ImportStacksContentRoutine extends AbstractPageContentRoutine implements S
      * @var \Concrete\Core\Page\Page|null
      */
     protected $home;
-
-    /**
-     * @var \Concrete\Core\Entity\Site\Tree|null
-     */
-    private $defaultSiteTree;
 
     /**
      * @var \Concrete\Core\Entity\Site\Site|null
@@ -45,8 +41,14 @@ class ImportStacksContentRoutine extends AbstractPageContentRoutine implements S
         if (!isset($sx->stacks)) {
             return;
         }
-        $this->defaultSiteTree = $this->home ? $this->home->getSiteTreeObject() : null;
-        $this->site = $this->home ? $this->home->getSite() : null;
+        if (!$this->home || $this->home->isError()) {
+            $this->home = Page::getByID(Page::getHomePageID(), 'RECENT');
+        }
+        if (!$this->home || $this->home->isError()) {
+            $this->site = null;
+        } else {
+            $this->site = $this->home->getSite();
+        }
         foreach ($sx->stacks->stack as $p) {
             $stack = $this->getStack($p);
             $locale = isset($p['section']) ? (string) $p['section'] : '';
@@ -72,7 +74,7 @@ class ImportStacksContentRoutine extends AbstractPageContentRoutine implements S
         $name = (string) $stackElement['name'];
         $type = (string) $stackElement['type'];
         if ($type === 'global_area') {
-            return Stack::getByName($name, 'RECENT', $this->defaultSiteTree);
+            return Stack::getByName($name, 'RECENT', $this->site);
         }
         $folder = $this->getOrCreateFolderByPath('/' . trim((string) $stackElement['path'], '/'));
         $stackID = $this->getStackIDByName($name, $folder);

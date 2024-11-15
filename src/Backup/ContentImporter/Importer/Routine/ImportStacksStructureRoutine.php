@@ -1,6 +1,7 @@
 <?php
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
+use Concrete\Core\Page\Page;
 use Concrete\Core\Page\Stack\Stack;
 use SimpleXMLElement;
 
@@ -16,7 +17,7 @@ class ImportStacksStructureRoutine extends AbstractPageStructureRoutine implemen
     /**
      * @var \Concrete\Core\Entity\Site\Tree|null
      */
-    private $siteTree;
+    private $site;
 
     /**
      * {@inheritdoc}
@@ -43,7 +44,14 @@ class ImportStacksStructureRoutine extends AbstractPageStructureRoutine implemen
         if (!isset($sx->stacks)) {
             return;
         }
-        $this->siteTree = $this->home ? $this->home->getSiteTreeObject(): null;
+        if (!$this->home || $this->home->isError()) {
+            $this->home = Page::getByID(Page::getHomePageID(), 'RECENT');
+        }
+        if (!$this->home || $this->home->isError()) {
+            $this->site = null;
+        } else {
+            $this->site = $this->home->getSite();
+        }
         $nodes = [];
         foreach ($sx->stacks->children() as $child) {
             $nodes[] = $child;
@@ -70,9 +78,9 @@ class ImportStacksStructureRoutine extends AbstractPageStructureRoutine implemen
         }
         switch ($type) {
             case 'global_area':
-                $globalArea = Stack::getByName($name, 'RECENT', $this->siteTree);
+                $globalArea = Stack::getByName($name, 'RECENT', $this->site);
                 if (!$globalArea) {
-                    Stack::addGlobalArea($name, $this->siteTree);
+                    Stack::addGlobalArea($name);
                 }
                 break;
             case 'folder':

@@ -68,7 +68,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     protected $siteHandle;
 
     /**
-     * The language sections of this site.
+     * The locale sections of this site.
      *
      * @ORM\OneToMany(targetEntity="Locale", cascade={"all"}, mappedBy="site")
      * @ORM\JoinColumn(name="siteLocaleID", referencedColumnName="siteLocaleID")
@@ -231,7 +231,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
-     * Get the language sections of this site.
+     * Get the locale sections of this site.
      *
      * @return \Concrete\Core\Entity\Site\Locale[]|\Doctrine\Common\Collections\ArrayCollection
      */
@@ -241,7 +241,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
-     * Set the language sections of this site.
+     * Set the locale sections of this site.
      *
      * @param \Concrete\Core\Entity\Site\Locale[]|\Doctrine\Common\Collections\ArrayCollection $locales
      */
@@ -251,7 +251,7 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
-     * Get the ID of the home page.
+     * Get the ID of the home page of the default locale.
      *
      * @return int|null
      */
@@ -263,6 +263,8 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
+     * Get the ID of the tree of the default locale.
+     *
      * {@inheritdoc}
      *
      * @see \Concrete\Core\Site\Tree\TreeInterface::getSiteTreeID()
@@ -275,13 +277,28 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
+     * Get the IDs of every tree of this site.
+     *
+     * @return int[]  The first one is the ID of default site tree
+     */
+    public function getSiteTreeIDs()
+    {
+        return array_map(
+            static function ($siteTree) {
+                return (int) $siteTree->getSiteTreeID();
+            },
+            $this->getSiteTreeObjects()
+        );
+    }
+
+    /**
      * Get the default locale (if set).
      *
      * @return \Concrete\Core\Entity\Site\Locale|null
      */
     public function getDefaultLocale()
     {
-        foreach ($this->locales as $locale) {
+        foreach ($this->getLocales() as $locale) {
             if ($locale->getIsDefault()) {
                 return $locale;
             }
@@ -289,6 +306,8 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
+     * Get the tree of the default locale.
+     *
      * {@inheritdoc}
      *
      * @see \Concrete\Core\Site\Tree\TreeInterface::getSiteTreeObject()
@@ -305,7 +324,29 @@ class Site implements TreeInterface, ObjectInterface, PermissionObjectInterface
     }
 
     /**
-     * Get the home page of the default language.
+     * Get the trees of every locale of this site.
+     *
+     * @return \Concrete\Core\Entity\Site\SiteTree[] The first one is the default site tree
+     */
+    public function getSiteTreeObjects()
+    {
+        $defaultSiteTree = $this->getSiteTreeObject();
+        if ($defaultSiteTree === null) {
+            return [];
+        }
+        $result = [$defaultSiteTree];
+        foreach ($this->getLocales() as $locale) {
+            $siteTree = $locale->getSiteTree();
+            if ($siteTree !== null && !in_array($siteTree, $result, true)) {
+                $result[] = $siteTree;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get the home page of the default locale.
      *
      * @param string|int $version 'ACTIVE', 'RECENT' or a specific page version ID
      *

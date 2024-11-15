@@ -155,7 +155,7 @@ class Page extends Collection implements \Concrete\Core\Permission\ObjectInterfa
      *
      * @param string $path the page path (example: /path/to/page)
      * @param string $version the page version ('RECENT' for the most recent version, 'ACTIVE' for the currently published version, 'SCHEDULED' for the currently scheduled version, or an integer to retrieve a specific version ID)
-     * @param \Concrete\Core\Site\Tree\TreeInterface|null $tree
+     * @param \Concrete\Core\Entity\Site\Site|\Concrete\Core\Site\Tree\TreeInterface|null $tree
      *
      * @return \Concrete\Core\Page\Page
      */
@@ -165,12 +165,33 @@ class Page extends Collection implements \Concrete\Core\Permission\ObjectInterfa
         $cache = \Core::make('cache/request');
 
         if ($tree) {
-            $item = $cache->getItem(sprintf('site/page/path/%s/%s', $tree->getSiteTreeID(), trim($path, '/')));
+            if ($tree instanceof Site) {
+                $treeIDs = $tree->getSiteTreeIDs();
+                sort($treeIDs, SORT_NUMERIC);
+            } else {
+                $treeIDs = [$tree->getSiteTreeID()];
+            }
+            $item = $cache->getItem(sprintf('site/page/path/%s/%s', implode('-', $treeIDs), trim($path, '/')));
             $cID = $item->get();
             if ($item->isMiss()) {
-                $db = Database::connection();
-                $cID = $db->fetchColumn('select Pages.cID from PagePaths inner join Pages on Pages.cID = PagePaths.cID where cPath = ? and siteTreeID = ?', [$path, $tree->getSiteTreeID()]);
-                $cache->save($item->set($cID));
+                if ($treeIDs === []) {
+                    $cID = 0;
+                } else {
+                    $db = Database::connection();
+                    $cID = $db->fetchColumn(
+                        'SELECT Pages.cID FROM PagePaths INNER JOIN Pages on Pages.cID = PagePaths.cID WHERE siteTreeID IN (?) AND cPath = ?',
+                        [
+                            $treeIDs,
+                            $path,
+                        ],
+                        0,
+                        [
+                            $db::PARAM_INT_ARRAY,
+                            \PDO::PARAM_STR,
+                        ]
+                    );
+                    $cache->save($item->set($cID));
+                }
             }
         } else {
             $item = $cache->getItem(sprintf('page/path/%s', trim($path, '/')));

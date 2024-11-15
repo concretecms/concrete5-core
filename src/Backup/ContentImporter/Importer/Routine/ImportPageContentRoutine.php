@@ -14,6 +14,11 @@ class ImportPageContentRoutine extends AbstractPageContentRoutine implements Spe
      */
     protected $home;
 
+    /**
+     * @var \Concrete\Core\Entity\Site\Site|null
+     */
+    private $site;
+
     public function getHandle()
     {
         return 'page_content';
@@ -34,22 +39,16 @@ class ImportPageContentRoutine extends AbstractPageContentRoutine implements Spe
         if (!isset($sx->pages) || !isset($sx->pages->page)) {
             return;
         }
-        $home = $this->home;
-        if (!$home || $home->isError()) {
-            $home = Page::getByID(Page::getHomePageID(), 'RECENT');
-            if (!$home || $home->isError()) {
+        if (!$this->home || $this->home->isError()) {
+            $this->home = Page::getByID(Page::getHomePageID(), 'RECENT');
+            if (!$this->home || $this->home->isError()) {
                 throw new UserMessageException(t('Unable to find the home page'));
             }
         }
-        $site = $home->getSite();
+        $this->site = $this->home->getSite();
         $pageAttributeCategory = app(PageCategory::class);
         foreach ($sx->pages->page as $pageElement) {
-            $path = '/' . trim((string) $pageElement['path'], '/');
-            if ($path !== '/') {
-                $page = Page::getByPath($path, 'RECENT', $site);
-            } else {
-                $page = $home;
-            }
+            $page = $this->getPageByPath((string) $pageElement['path']);
             if (isset($pageElement->area)) {
                 $this->importPageAreas($page, $pageElement);
             }
@@ -118,5 +117,26 @@ class ImportPageContentRoutine extends AbstractPageContentRoutine implements Spe
             }
             Section::relatePage($sourcePage, $destinationPage, $destinationSection->getLocale());
         }
+    }
+
+    /**
+     * @return \Concrete\Core\Page\Page|null
+     */
+    private function getPageByPath($path)
+    {
+        $path = '/' . trim($path, '/');
+        if ($path === '/') {
+            return $this->home;
+        }
+        $page = Page::getByPath($path, 'RECENT', $this->site);
+        if ($page && !$page->isError()) {
+            return $page;
+        }
+        $page = Page::getByPath($path, 'RECENT');
+        if ($page && !$page->isError()) {
+            return $page;
+        }
+        
+        return null;
     }
 }

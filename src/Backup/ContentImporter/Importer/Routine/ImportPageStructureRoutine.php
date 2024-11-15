@@ -328,6 +328,10 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         if ($page && !$page->isError()) {
             return $page;
         }
+        $page = Page::getByPath($path, 'RECENT');
+        if ($page && !$page->isError()) {
+            return $page;
+        }
 
         return null;
     }

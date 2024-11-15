@@ -19,9 +19,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
     protected $home;
 
     /**
-     * @var \Concrete\Core\Entity\Site\Tree|null
+     * @var \Concrete\Core\Entity\Site\Site|null
      */
-    private $defaultSiteTree;
+    private $site;
 
     public function getHandle()
     {
@@ -56,7 +56,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
                 throw new UserMessageException(t('Unable to find the home page'));
             }
         }
-        $this->defaultSiteTree = $this->home->getSiteTreeObject();
+        $this->site = $this->home->getSite();
         $elements = $this->sortElementsByPath($elements);
         while ($elements !== []) {
             $delayed = [];
@@ -324,15 +324,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         if ($path === '/') {
             return $this->home;
         }
-        $page = Page::getByPath($path, 'RECENT', $this->defaultSiteTree);
+        $page = Page::getByPath($path, 'RECENT', $this->site);
         if ($page && !$page->isError()) {
             return $page;
-        }
-        if ($this->defaultSiteTree !== null) {
-            $page = Page::getByPath($path, 'RECENT');
-            if ($page && !$page->isError()) {
-                return $page;
-            }
         }
 
         return null;

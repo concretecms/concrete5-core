@@ -28,9 +28,7 @@ use Concrete\Core\StyleCustomizer\Inline\StyleSet;
 use Concrete\Core\Support\Facade\Application;
 use Concrete\Core\Support\Facade\Facade;
 use Config;
-use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\FetchMode;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Loader;
 use Page;
 use PageCache;
@@ -965,9 +963,7 @@ public function outputCustomStyleHeaderItems($return = false)
     /**
      * Get all the global stacks loaded in this collection.
      *
-     * @return Stack[]
-     * @throws Exception
-     * @throws BindingResolutionException
+     * @return \Concrete\Core\Page\Stack\Stack[]
      */
     protected function getGlobalStacksForCollection()
     {

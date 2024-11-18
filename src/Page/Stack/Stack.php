@@ -54,14 +54,15 @@ class Stack extends Page
      *
      * @param Collection $collection
      * @param string $arHandle
-     * @return void
+     * @return Stack|null
+     * @throws \Exception
      */
     public static function getGlobalAreaStackFromName(Collection $collection, string $arHandle): ?Stack
     {
         $app = Application::getFacadeApplication();
         $db = $app->make(Connection::class);
         $checker = new Checker($collection);
-        
+
         /** @var \Concrete\Core\Cache\Level\RequestCache $requestCache */
         $requestCache = $app->make('cache/request');
         $identifier = sprintf('/stack/global_area/%s/cID', $arHandle);
@@ -75,16 +76,23 @@ class Stack extends Page
             $requestCache->save($item->set($stackID));
         }
 
-        if ($stackID) {
-            if ($checker->canViewPageVersions()) {
-                $s = Stack::getByID($stackID, 'RECENT');
-            } else {
-                $s = Stack::getByID($stackID, 'ACTIVE');
-            }
-            return $s;
+        if (!$stackID) {
+            return null;
         }
-        return null;
+        $cvID = $checker->canViewPageVersions() ? 'RECENT': 'ACTIVE';
+        $s = Stack::getByID($stackID, $cvID);
+        if (!$s) {
+            return null;
+        }
+        if ($app->make('multilingual/detector')->isEnabled() && $collection instanceof Page) {
+            $section = Section::getBySectionOfSite($collection);
+            if ($section) {
+                $s = $s->getLocalizedStack($section, $cvID) ?: $s;
+            }
+        }
+        return $s;
     }
+
     /**
      * @param string $path
      * @param string $version

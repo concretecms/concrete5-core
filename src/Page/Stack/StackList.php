@@ -2,6 +2,7 @@
 namespace Concrete\Core\Page\Stack;
 
 use Concrete\Core\Multilingual\Page\Section\Section;
+use Concrete\Core\Page\Page;
 use Concrete\Core\Page\PageList;
 use Concrete\Core\Page\Stack\Folder\Folder;
 use Concrete\Core\Page\Type\Type;
@@ -35,6 +36,11 @@ class StackList extends PageList
      */
     private $includeStacks = true;
 
+    /**
+     * @var null|false|\Concrete\Core\Page\Stack\Folder\Folder NULL for no filter; false for top-level items; a Folder instance otherwise
+     */
+    private $folder = null;
+
     public function __construct()
     {
         parent::__construct();
@@ -42,7 +48,6 @@ class StackList extends PageList
         $this->pageVersionToRetrieve = self::PAGE_VERSION_RECENT;
         $this->query->leftJoin('p', 'Stacks', 's', 's.cID = p.cID');
         $this->ignorePermissions();
-        $this->filterByPath(STACKS_PAGE_PATH);
         $this->includeSystemPages();
         $this->sortByName();
     }
@@ -102,7 +107,7 @@ class StackList extends PageList
 
     public function filterByFolder(Folder $folder)
     {
-        $this->filterByParentID($folder->getPage()->getCollectionID());
+        $this->folder = $folder;
     }
 
     /**
@@ -170,6 +175,30 @@ class StackList extends PageList
         return $this;
     }
 
+    /**
+     * List only the root stacks/folders?
+     *
+     * @return bool
+     */
+    public function getRootItemsOnly(): bool
+    {
+        return $this->folder === false;
+    }
+
+    /**
+     * List only the root stacks/folders?
+     *
+     * @return $this
+     */
+    public function setRootItemsOnly(bool $value): self
+    {
+        if ($value) {
+            $this->folder = false;
+        }
+
+        return $this;
+    }
+
     public function filterByUserAdded()
     {
         $this->query->andWhere('s.stType = ' . $this->query->createNamedParameter(Stack::ST_TYPE_USER_ADDED));
@@ -178,6 +207,17 @@ class StackList extends PageList
     public function filterByStackCategory(StackCategory $category)
     {
         $this->filterByParentID($category->getPage()->getCollectionID());
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see \Concrete\Core\Search\ItemList\Database\ItemList::deliverQueryObject()
+     */
+    public function deliverQueryObject()
+    {
+        $this->applyFolderFilter();
+        return parent::deliverQueryObject();
     }
 
     /**
@@ -211,6 +251,18 @@ class StackList extends PageList
         $stack = Stack::getByID($queryRow['cID'], 'ACTIVE');
 
         return $stack ?: parent::getResult($queryRow);
+    }
+
+    protected function applyFolderFilter()
+    {
+        if ($this->folder === false) {
+            $rootPage = Page::getByPath(STACKS_PAGE_PATH);
+            $this->filterByParentID($rootPage->getCollectionID());
+        } elseif ($this->folder instanceof Folder) {
+            $this->filterByParentID($this->folder->getPage()->getCollectionID());
+        } else {
+            $this->filterByPath(STACKS_PAGE_PATH);
+        }
     }
 
     protected function applyTypeFilter(QueryBuilder $query)

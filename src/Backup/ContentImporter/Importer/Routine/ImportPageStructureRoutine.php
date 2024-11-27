@@ -1,6 +1,7 @@
 <?php
 namespace Concrete\Core\Backup\ContentImporter\Importer\Routine;
 
+use Concrete\Core\Backup\ContentImporter\Exception\MissingPageAtPathException;
 use Concrete\Core\Database\Connection\Connection;
 use Concrete\Core\Entity\Page\PagePath;
 use Concrete\Core\Error\UserMessageException;
@@ -60,31 +61,33 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         $elements = $this->sortElementsByPath($elements);
         while ($elements !== []) {
             $delayed = [];
-            $errorMessages = [];
+            $missingPageAtPathException = null;
             foreach ($elements as $element) {
-                $importResult = null;
-                switch ($element->getName()) {
-                    case 'page':
-                        $localeInfo = $this->extractLocale($element);
-                        $importResult = $this->getOrCreatePage($element, $localeInfo);
-                        if (is_object($importResult)) {
-                            $this->importAdditionalPagePaths($element, $importResult);
-                        }
-                        break;
-                    case 'external-link':
-                        $importResult = $this->importExternalLink($element);
-                        break;
-                    case 'alias':
-                        $importResult = $this->importAlias($element);
-                        break;
-                }
-                if (is_string($importResult)) {
+                try {
+                    switch ($element->getName()) {
+                        case 'page':
+                            $localeInfo = $this->extractLocale($element);
+                            $page = $this->getOrCreatePage($element, $localeInfo);
+                            $this->importAdditionalPagePaths($element, $page);
+                            break;
+                        case 'external-link':
+                            $this->importExternalLink($element);
+                            break;
+                        case 'alias':
+                            $this->importAlias($element);
+                            break;
+                    }
+                } catch (MissingPageAtPathException $x) {
                     $delayed[] = $element;
-                    $errorMessages[] = $importResult;
+                    if ($missingPageAtPathException === null) {
+                        $missingPageAtPathException = $x;
+                    } else {
+                        $missingPageAtPathException = $missingPageAtPathException->merge($x);
+                    }
                 }
             }
             if (count($delayed) == count($elements)) {
-                throw new UserMessageException(implode("\n", $errorMessages));
+                throw $missingPageAtPathException;
             }
             $elements = $delayed;
             $this->clearPageCache();
@@ -98,7 +101,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
     }
 
     /**
-     * @return \Concrete\Core\Page\Page|string returns a string describing why we should import the page later on, or the created page otherwise
+     * @throws \Concrete\Core\Backup\ContentImporter\Exception\MissingPageAtPathException
+     *
+     * @return \Concrete\Core\Page\Page
      */
     private function getOrCreatePage(SimpleXMLElement $pageElement, array $localeInfo = null)
     {
@@ -142,7 +147,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
             $parentPagePath = '/' . implode('/', $slugs);
             $parent = $this->getPageByPath($parentPagePath);
             if ($parent === null) {
-                return (t('Missing the page with path %s', $parentPagePath));
+                throw new MissingPageAtPathException($parentPagePath);
             }
         }
         if ($localeInfo === null || $this->localeAlreadyExists($localeInfo)) {
@@ -247,10 +252,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
     }
 
     /**
-     * @return \Concrete\Core\Page\Page|string|null returns:
-     * - NULL if there's already a collection with the same handle
-     * - a string if the parent page doesn't exist yet
-     * - the newly created page otherwise
+     * @throws \Concrete\Core\Backup\ContentImporter\Exception\MissingPageAtPathException
+     *
+     * @return \Concrete\Core\Page\Page|null returns NULL if there's already a collection with the same handle, the newly created page otherwise
      */
     private function importExternalLink(SimpleXMLElement $externalLinkElement)
     {
@@ -262,7 +266,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         $parentPagePath = '/' . implode('/', $slugs);
         $parent = $this->getPageByPath($parentPagePath);
         if ($parent === null) {
-            return t('Missing the page with path %s', $parentPagePath);
+            throw new MissingPageAtPathException($parentPagePath);
         }
         if ($this->parentPageHasChildWithHandle($parent, $cHandle)) {
             return null;
@@ -281,10 +285,9 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
     }
 
     /**
-     * @return \Concrete\Core\Page\Page|string|null returns:
-     * - NULL if there's already a collection with the same handle
-     * - a string if the parent page and/or the original page don't exist yet
-     * - the newly created page otherwise
+     * @throws \Concrete\Core\Backup\ContentImporter\Exception\MissingPageAtPathException
+     *
+     * @return \Concrete\Core\Page\Page|string|null returns NULL if there's already a collection with the same handle, the newly created page otherwise
      */
     private function importAlias(SimpleXMLElement $aliasElement)
     {
@@ -296,7 +299,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         $parentPagePath = '/' . implode('/', $slugs);
         $parentPage = $this->getPageByPath($parentPagePath);
         if ($parentPage === null) {
-            return t('Missing the page with path %s', $parentPagePath);
+            throw new MissingPageAtPathException($parentPagePath);
         }
         if ($this->parentPageHasChildWithHandle($parentPage, $cHandle)) {
             return null;
@@ -304,7 +307,7 @@ class ImportPageStructureRoutine extends AbstractPageStructureRoutine implements
         $originalPagePath = '/' . trim((string) $aliasElement['original-path'], '/');
         $originalPage = $this->getPageByPath($originalPagePath);
         if ($originalPage === null) {
-            return t('Missing the page with path %s', $originalPagePath);
+            throw new MissingPageAtPathException($originalPagePath);
         }
         $alias = $originalPage->createAlias($parentPage, [
             'name' => (string) $aliasElement['name'],

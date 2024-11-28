@@ -159,12 +159,16 @@ class Controller extends BlockController implements UsesFeatureInterface
             case 'rpv_pageUserName':
                 $cu_id = $c->getCollectionUserID();
                 $cu = User::getByUserID($cu_id);
-                $content = $cu->getUserName();
+                if(is_object($cu)) {
+                    $content = $cu->getUserName();
+                }
                 break;
             case 'rpv_pageUserEmail':
                 $cu_id = $c->getCollectionUserID();
                 $cu = User::getByUserID($cu_id);
-                $content = $cu->getUserInfoObject()->getUserEmail();
+                if(is_object($cu)){
+                    $content = $cu->getUserInfoObject()->getUserEmail();
+                }
                 break;
             default:
                 $content = $c->getAttribute($this->attributeHandle);

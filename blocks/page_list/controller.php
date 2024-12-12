@@ -251,21 +251,21 @@ class Controller extends BlockController implements UsesFeatureInterface
         $bt = BlockType::getByHandle('page_list');
         $controller = $bt->getController();
 
-        $this->request->request->set('num', ($this->request->get('num') > 0) ? $this->request->get('num') : 0);
-        $this->request->request->set('cThis', ($this->request->get('cParentID') == $this->request->get('current_page')) ? '1' : '0');
-        $this->request->request->set('cParentID', ($this->request->get('cParentID') === 'OTHER') ? $this->request->get('cParentIDValue') : $this->request->get('cParentID'));
+        $this->request->query->set('num', ($this->request->get('num') > 0) ? 20 : 0);
+        $this->request->query->set('cThis', ($this->request->get('cParentID') == $this->request->get('current_page')) ? '1' : '0');
+        $this->request->query->set('cParentID', ($this->request->get('cParentID') === 'OTHER') ? $this->request->get('cParentIDValue') : $this->request->get('cParentID'));
 
         if ($this->request->get('filterDateOption') !== 'between') {
-            $this->request->request->set('filterDateStart', null);
-            $this->request->request->set('filterDateEnd', null);
+            $this->request->query->set('filterDateStart', null);
+            $this->request->query->set('filterDateEnd', null);
         }
 
         if ($this->request->get('filterDateOption') === 'past') {
-            $this->request->request->set('filterDateDays', $this->request->get('filterDatePast'));
+            $this->request->query->set('filterDateDays', $this->request->get('filterDatePast'));
         } elseif ($this->request->get('filterDateOption') === 'future') {
-            $this->request->request->set('filterDateDays', $this->request->get('filterDateFuture'));
+            $this->request->query->set('filterDateDays', $this->request->get('filterDateFuture'));
         } else {
-            $this->request->request->set('filterDateDays', null);
+            $this->request->query->set('filterDateDays', null);
         }
 
         $controller->num = $this->request->get('num');

@@ -276,7 +276,7 @@ class Add extends BackendInterfacePageController
                                     //$errorList->add(t("Error while removing orphaned block."));
                                 } else {
                                     // returns false because the area no longer exists in the theme.
-                                    $block->deleteBlock();
+                                    $block->deleteBlock(true);
                                 }
                             }
                         }
@@ -321,7 +321,7 @@ class Add extends BackendInterfacePageController
                     $errorList->add(t("Error while removing orphaned block."));
                 } else {
                     // returns false because the area no longer exists in the theme.
-                    $block->deleteBlock();
+                    $block->deleteBlock(true);
                 }
             }
         }

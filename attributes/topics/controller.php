@@ -347,7 +347,7 @@ class Controller extends AttributeTypeController implements
 
         $e = $this->app->make('error');
 
-        if (!isset($data['akTopicParentNodeID']) || !isset($data['akTopicTreeID'])) {
+        if (empty($data['akTopicParentNodeID']) || empty($data['akTopicTreeID'])) {
             $e->add(t('You must specify a valid topic tree parent node ID and topic tree ID.'));
         }
 

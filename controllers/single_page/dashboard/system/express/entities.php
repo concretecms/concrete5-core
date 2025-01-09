@@ -423,6 +423,7 @@ class Entities extends DashboardPageController
             $indexer->updateRepository($previousEntity, $entity);
 
             $resultsNode = Node::getByID($entity->getEntityResultsNodeId());
+            $resultsNode->setTreeNodeName($name);
             $folder = Node::getByID($this->request->request('entity_results_parent_node_id'));
             if (is_object($folder)) {
                 $resultsNode->move($folder);

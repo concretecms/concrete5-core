@@ -1106,7 +1106,9 @@ class User extends ConcreteObject
             // $secure
             $config->get('concrete.session.cookie.cookie_secure'),
             // $httpOnly
-            $config->get('concrete.session.cookie.cookie_httponly')
+            $config->get('concrete.session.cookie.cookie_httponly'),
+            // $sameSite
+            $config->get('concrete.session.cookie.samesite')
         );
 
         if ($cache_interface) {

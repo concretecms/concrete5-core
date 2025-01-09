@@ -2,8 +2,7 @@
 namespace Concrete\Core\Feed;
 
 use Concrete\Core\Cache\Adapter\LaminasCacheDriver;
-use GuzzleHttp\Client;
-use Laminas\Feed\Reader\Feed\Rss;
+use Laminas\Feed\Reader\Feed\FeedInterface;
 use Laminas\Feed\Reader\Reader;
 
 class FeedService
@@ -30,7 +29,7 @@ class FeedService
         return $feed;
     }
 
-    public function getPosts(Rss $feed): array
+    public function getPosts(FeedInterface $feed): array
     {
         $posts = [];
         foreach ($feed as $post) {

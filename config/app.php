@@ -644,6 +644,7 @@ return [
                 ['javascript', 'ckeditor'],
                 ['javascript', 'ckeditor/concrete'],
                 ['css', 'ckeditor/concrete'],
+                ['javascript-localized', 'core/cms'],
             ],
         ],
         'ace' => [

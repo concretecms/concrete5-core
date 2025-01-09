@@ -6,8 +6,8 @@ return [
      *
      * @var string
      */
-    'version' => '8.5.18',
-    'version_installed' => '8.5.18',
+    'version' => '8.5.19',
+    'version_installed' => '8.5.19',
     'version_db' => '20240809105200', // the key of the latest database migration
 
     /*
@@ -1203,7 +1203,7 @@ return [
          */
         'enabled' => false,
 
-        /**
+        /*
          * Which grant types do we allow to connect to the API.
          *
          * @var array
@@ -1213,6 +1213,18 @@ return [
             'authorization_code' => true,
             'password_credentials' => false,
             'refresh_token' => true,
+        ],
+
+        'key' => [
+            'bits' => 2048,
+            // If empty we'll use the system temporary directory
+            'save_path' => '',
+            'ownership' => [
+                // Try to take the ownership of the key files stored in the save_path directory?
+                'set' => true,
+                // Abort the operation if taking the ownership fails?
+                'force' => false,
+            ],
         ],
     ],
 

@@ -191,6 +191,11 @@ class SessionFactory implements SessionFactoryInterface
             $options['cookie_secure'] = $this->app->make(Request::class)->isSecure();
         }
 
+        $sameSite = array_get($options, 'samesite');
+        if ($sameSite) {
+            $options['cookie_samesite'] = $sameSite;
+        }
+
         $storage->setOptions($options);
 
         return $app->make(Storage\LoggedStorage::class, ['wrappedStorage' => $storage]);

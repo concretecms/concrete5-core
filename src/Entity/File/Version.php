@@ -1223,7 +1223,7 @@ class Version implements ObjectInterface
 
     /**
      * Delete this version of the file. When (true), also delete all thumbnails and all
-     * other versions that share the same physical file.
+     * the physical file, irrespective of use by other versions of the file.
      *
      * @param bool $deleteFilesAndThumbnails should we delete the actual file and the thumbnails?
      */

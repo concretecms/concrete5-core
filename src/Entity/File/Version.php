@@ -1225,6 +1225,8 @@ class Version implements ObjectInterface
      * Delete this version of the file.
      *
      * @param bool $deleteFilesAndThumbnails should we delete the actual file and the thumbnails?
+     *              When (true), also delete all thumbnails and the physical file, irrespective of 
+     *              use by other versions of the file.
      */
     public function delete($deleteFilesAndThumbnails = false)
     {

@@ -54,7 +54,7 @@ class DatetimeDataFieldData implements DataFieldDataInterface
     
     public function denormalize(DenormalizerInterface $denormalizer, $data, $format = null, array $context = [])
     {
-        if (isset($data['timestamp'])) {
+        if (!empty($data['timestamp'])) {
             $dateTime = new DateTime();
             $dateTime->setTimestamp($data['timestamp']);
             $dateTime->setTimezone(new DateTimeZone($data['timezone']));

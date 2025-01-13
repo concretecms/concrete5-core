@@ -101,10 +101,15 @@ class Controller extends AttributeTypeController implements
     public function exportValue(\SimpleXMLElement $akn)
     {
         $list = $this->getSelectedOptions();
+
+        /** @var Xml $xmlService */
+        $xmlService = $this->app->make(Xml::class);
+
         if ($list->count() > 0) {
             $av = $akn->addChild('value');
+
             foreach ($list as $l) {
-                $av->addChild('option', (string) $l);
+                $xmlService->createChildElement($av, 'value', $l);
             }
         }
     }
@@ -755,9 +760,9 @@ EOT
         }
 
         if (isset($data['akSelectOptionDisplayOrder']) && in_array(
-            $data['akSelectOptionDisplayOrder'],
-            ['display_asc', 'alpha_asc', 'popularity_desc']
-        )
+                $data['akSelectOptionDisplayOrder'],
+                ['display_asc', 'alpha_asc', 'popularity_desc']
+            )
         ) {
             $akSelectOptionDisplayOrder = $data['akSelectOptionDisplayOrder'];
         } else {
@@ -1042,7 +1047,7 @@ EOT
             $key->getAttributeKeyHandle(),
             $key->getAttributeKeyDisplayName(),
             'array',
-             null,
+            null,
             ['type' => 'integer'],
         );
     }

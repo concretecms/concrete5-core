@@ -94,7 +94,7 @@ trait StackTrait
             if ($p === 0) {
                 break;
             }
-            $tryPath = substr($tryPath, $p - 1);
+            $tryPath = substr($tryPath, 0, $p);
         }
         if ($folder === null) {
             $existingPath = '';

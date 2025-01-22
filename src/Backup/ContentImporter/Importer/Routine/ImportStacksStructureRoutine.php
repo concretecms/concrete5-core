@@ -84,9 +84,9 @@ class ImportStacksStructureRoutine extends AbstractPageStructureRoutine implemen
                 }
                 break;
             case 'folder':
-                $parentFolder = $this->getOrCreateFolderByPath($path);
                 $folderPath = rtrim($path, '/') . '/' . $name;
                 if (!array_key_exists($folderPath, $this->getExistingFolders())) {
+                    $parentFolder = $this->getOrCreateFolderByPath($path);
                     $this->createFolder($name, $folderPath, $parentFolder);
                 }
                 break;

@@ -58,7 +58,7 @@ class ImportStacksContentRoutine extends AbstractPageContentRoutine implements S
                     continue;
                 }
                 $localizedStack = $stack->getLocalizedStack($section);
-                $stack = $localizedStack ?: $stack->addLocalizedStack($section);
+                $stack = $localizedStack ?: $stack->addLocalizedStack($section, ['copyContents' => false]);
             }
             if (isset($p->area)) {
                 $this->importPageAreas($stack, $p);

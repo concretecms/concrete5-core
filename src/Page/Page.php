@@ -2829,13 +2829,16 @@ EOT
      * Add a new block to a specific area of the page.
      *
      * @param \Concrete\Core\Entity\Block\BlockType\BlockType $bt the type of block to be added
-     * @param \Concrete\Core\Area\Area $a the area instance (or its handle) to which the block should be added to
+     * @param \Concrete\Core\Area\Area|string $a the area instance (or its handle) to which the block should be added to
      * @param array $data The data of the block. This data depends on the specific block type
      *
      * @return \Concrete\Core\Block\Block
      */
     public function addBlock($bt, $a, $data)
     {
+        if (is_string($a) && $a !== '') {
+            $a = Area::getOrCreate($this, $a);
+        }
         $b = parent::addBlock($bt, $a, $data);
         $btHandle = $bt->getBlockTypeHandle();
         if ($b->getBlockTypeHandle() == BLOCK_HANDLE_PAGE_TYPE_OUTPUT_PROXY) {
@@ -2850,11 +2853,8 @@ EOT
         }
         $theme = $this->getCollectionThemeObject();
         if ($btHandle && $theme) {
-            $areaTemplates = [];
             $pageTypeTemplates = [];
-            if (is_object($a)) {
-                $areaTemplates = $a->getAreaCustomTemplates();
-            }
+            $areaTemplates = is_object($a) ? $a->getAreaCustomTemplates() : [];
             $themeTemplates = $theme->getThemeDefaultBlockTemplates();
             if (!is_array($themeTemplates)) {
                 $themeTemplates = [];

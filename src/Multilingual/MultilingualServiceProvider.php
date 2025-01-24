@@ -9,13 +9,11 @@ class MultilingualServiceProvider extends ServiceProvider
     {
         $this->app->bind('multilingual/interface/flag', Service\UserInterface\Flag::class);
         $this->app->bind('multilingual/extractor', Service\Extractor::class);
-
-        $singletons = array(
-            'multilingual/interface/flag' => '\Concrete\Core\Multilingual\Service\UserInterface\Flag',
-        );
-
-        foreach ($singletons as $key => $value) {
-            $this->app->singleton($key, $value);
+        foreach ([
+            'multilingual/detector' => Service\Detector::class,
+        ] as $alias => $class) {
+            $this->app->singleton($class);
+            $this->app->alias($class, $alias);
         }
     }
 }

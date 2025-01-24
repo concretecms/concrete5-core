@@ -30,7 +30,7 @@ class PageNotifier extends AbstractNotifier
                         if ($query) {
                             foreach ($query->getFields() as $field) {
                                 if ($field instanceof PageTypeField) {
-                                    if ($field->getData('ptID') == $pageType->getPageTypeID()) {
+                                    if ($pageType !== null && $field->getData('ptID') == $pageType->getPageTypeID()) {
                                         $includeInstance = true;
                                     } else {
                                         $includeInstance = false;

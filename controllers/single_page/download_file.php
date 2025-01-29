@@ -54,7 +54,7 @@ class DownloadFile extends PageController
             $file = File::getByID($fID);
 
             if ($file instanceof FileEntity && $file->getFileID() > 0) {
-                $rcID = intval($rcID);
+                $rcID = (int) $rcID;
                 $rc = null;
 
                 if ($rcID > 0) {

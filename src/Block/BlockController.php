@@ -412,6 +412,13 @@ class BlockController extends \Concrete\Core\Controller\AbstractController
         return $this->btTable;
     }
 
+    /**
+     * @param \Concrete\Core\Page\Page $page
+     * @param string $arHandle
+     * @param \SimpleXMLElement $blockNode
+     *
+     * @return \Concrete\Core\Block\Block
+     */
     public function import($page, $arHandle, \SimpleXMLElement $blockNode)
     {
         $xml = $this->app->make(Xml::class);
@@ -467,6 +474,8 @@ class BlockController extends \Concrete\Core\Controller\AbstractController
             $blockController = $b->getController(); // We have to do this because we need it loaded with the right block object, data.
             $this->app->make(AggregateTracker::class)->track($blockController);
         }
+
+        return $b;
     }
 
     /**

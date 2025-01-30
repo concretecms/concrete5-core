@@ -101,6 +101,7 @@ class Controller extends BlockController implements UsesFeatureInterface, FileTr
     protected $btCacheBlockOutputForRegisteredUsers = true;
     protected $btCacheBlockOutputLifetime = 300;
     protected $btExportFileColumns = ['brandingLogo', 'brandingTransparentLogo'];
+    protected $home;
 
     /**
      * {@inheritdoc}
@@ -197,14 +198,18 @@ class Controller extends BlockController implements UsesFeatureInterface, FileTr
 
     protected function getHomePage(): Page
     {
-        $section = Section::getByLocale(\Localization::getInstance()->getLocale());
-        if ($section instanceof Section) {
-            $home = \Page::getByID($section->getSiteHomePageID());
-        } else {
-            $site = $this->app->make('site')->getSite();
-            $home = $site->getSiteHomePageObject();
+        if ($this->home === null) {
+            $section = Section::getByLocale(\Localization::getInstance()->getLocale());
+            if ($section instanceof Section) {
+                $home = \Page::getByID($section->getSiteHomePageID());
+            } else {
+                $site = $this->app->make('site')->getSite();
+                $home = $site->getSiteHomePageObject();
+            }
+            $this->home = $home;
         }
-        return $home;
+
+        return $this->home;
     }
 
     protected function getNavigation(): Navigation

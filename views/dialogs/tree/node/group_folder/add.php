@@ -61,7 +61,7 @@ $token = $app->make(Token::class);
         </div>
     </form>
 
-    <script type="text/javascript">
+    <script>
         $(function () {
             _.defer(function () {
                 $('input[name=treeNodegroup_folderName]').focus();

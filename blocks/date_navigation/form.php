@@ -77,7 +77,7 @@ foreach ($pagetypes as $ct) {
 	</div>
 </fieldset>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $("input[name=filterByParent]").on('change', function () {
             if ($(this).is(":checked")) {

@@ -108,7 +108,7 @@ if (isset($client) && $client->hasCustomScopes()) {
     </form>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         Concrete.Vue.activateContext('cms', function (Vue, config) {
             new Vue({

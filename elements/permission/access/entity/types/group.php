@@ -1,7 +1,7 @@
 <?php defined('C5_EXECUTE') or die("Access Denied."); ?>
 <?php $url = $type->getControllerUrl(); ?>
 
-<script type="text/javascript">
+<script>
 $(function() {
 	ConcreteEvent.unsubscribe('SelectGroup.core');
 	ConcreteEvent.subscribe('SelectGroup.core', function(e, data) {

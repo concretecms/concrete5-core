@@ -188,7 +188,7 @@ use Concrete\Controller\SinglePage\Dashboard\Welcome\Health;
 </div>
 <?php View::element('dashboard/background_image'); ?>
 
-<script type="text/javascript">
+<script>
     $(function() {
         Concrete.Vue.activateContext('backend', function (Vue, config) {
             new Vue({

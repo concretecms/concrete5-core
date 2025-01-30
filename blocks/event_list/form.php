@@ -192,7 +192,7 @@ if (count($pageAttributeKeys)) {
 </fieldset>
 
 <!--suppress EqualityComparisonWithCoercionJS -->
-<script type="text/javascript">
+<script>
     $(function () {
         $('input[name=filterByTopic]').on('change', function () {
             let selected = $('input[name=filterByTopic]:checked').val();

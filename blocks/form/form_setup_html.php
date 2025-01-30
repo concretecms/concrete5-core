@@ -334,7 +334,7 @@
     }
 </style>
 
-<script type="text/javascript">
+<script>
     //safari was loading the auto.js too late. This ensures it's initialized
     function initFormBlockWhenReady() {
         if (miniSurvey && typeof (miniSurvey.init) == 'function') {

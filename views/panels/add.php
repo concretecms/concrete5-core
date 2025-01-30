@@ -622,7 +622,7 @@ break;
 }
 ?>
 
-<script type="text/javascript">
+<script>
     $(function () {
         // switching the up/down arrows for collapsing block sets
         $('#ccm-panel-add-block').find('div[id^="ccm-block-set-"]').on('hidden.bs.collapse shown.bs.collapse', function () {

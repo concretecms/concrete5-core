@@ -27,7 +27,7 @@ $approvals = $approvals ?? 0;
         $loc->popActiveContext();
     } else { ?>
         <?php if (count($types)) { ?>
-            <script type="text/javascript">
+            <script>
                 $(function() {
                     var width = parseInt($('#ccm-block-desktop-site-activity-chart').width()),
                         height = width;

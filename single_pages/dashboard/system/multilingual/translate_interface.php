@@ -188,7 +188,7 @@ if ($this->controller->getTask() == 'translate_po') {
                 </div>
             </div>
 
-            <script type="text/javascript">
+            <script>
                 $(function() {
                     $('button[data-dialog=reset]').on('click', function() {
                         jQuery.fn.dialog.open({

@@ -71,7 +71,7 @@ class UserSelector
 <div data-concrete-user-input="{$identifier}">
     <concrete-user-input :user-id="{$selectedUID}" choose-text="{$chooseText}" input-name="{$fieldName}"></concrete-user-input>
 </div>
-<script type="text/javascript">
+<script>
 $(function() {
     Concrete.Vue.activateContext('cms', function (Vue, config) {
         new Vue({
@@ -169,7 +169,7 @@ EOL;
     input-name="{$fieldName}"
     ></concrete-user-select>
 </div>
-<script type="text/javascript">
+<script>
 $(function() {
     Concrete.Vue.activateContext('cms', function (Vue, config) {
         new Vue({

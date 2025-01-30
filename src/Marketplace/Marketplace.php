@@ -364,7 +364,7 @@ class Marketplace implements ApplicationAwareInterface
                 ) . '</div>';
             }
             $time = time();
-            $ifr = '<script type="text/javascript">
+            $ifr = '<script>
                     window.addEventListener("message", function(e) {
                         jQuery.fn.dialog.hideLoader();
                         if (e.data == "loading") {
@@ -435,7 +435,7 @@ class Marketplace implements ApplicationAwareInterface
             }
 
             $time = time();
-            $ifr = '<script type="text/javascript">
+            $ifr = '<script>
                 window.addEventListener("message", function(e) {
                     jQuery.fn.dialog.hideLoader();
                     if (e.data == "loading") {

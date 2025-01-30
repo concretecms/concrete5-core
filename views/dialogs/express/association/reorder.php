@@ -30,7 +30,7 @@
         ?>
     </div>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             $('ul[data-sortable-list=express-entries]').sortable();
         });

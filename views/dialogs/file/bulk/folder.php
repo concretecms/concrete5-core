@@ -32,7 +32,7 @@ use Concrete\Core\View\View;
     </div>
 </form>
 
-<script type="text/javascript">
+<script>
     $(function () {
         ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.updateFolder');
         ConcreteEvent.subscribe('AjaxFormSubmitSuccess.updateFolder', function (e, data) {

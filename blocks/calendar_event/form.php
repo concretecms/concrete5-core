@@ -108,7 +108,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
 </fieldset>
 
 <!--suppress EqualityComparisonWithCoercionJS -->
-<script type="text/javascript">
+<script>
     $(function () {
         $('select[data-select=mode]').on('change', function () {
             if ($(this).val() == 'S') {

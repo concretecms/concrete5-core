@@ -46,7 +46,7 @@ if (is_object($renderer)) {
 } ?>
 
 <?php if ($allowDelete) { ?>
-<script type="text/javascript">
+<script>
     $(function() {
         $('[data-dialog]').on('click', function() {
             var $element = $('#ccm-dialog-' + $(this).attr('data-dialog'));

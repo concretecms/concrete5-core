@@ -42,7 +42,7 @@
 	<div data-tree="<?=$tree->getTreeID(); ?>">
 	</div>
 
-	<script type="text/javascript">
+	<script>
 	$(function() {
 		$('select[name=topicTreeIDSelect]').on('change', function() {
 			window.location.href = '<?=$view->url('/dashboard/system/attributes/topics', 'view'); ?>' + $(this).val();

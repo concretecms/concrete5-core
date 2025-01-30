@@ -237,7 +237,7 @@ $dropZoneId = "ccm-drop-zone-" . $idHelper->getString();
 
 </div>
 
-<script type="text/javascript">
+<script>
 
     ConcreteEvent.subscribe('FileManagerSelectFile', function(e, files) {
         setTimeout(function() {

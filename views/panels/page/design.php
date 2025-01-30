@@ -124,7 +124,7 @@ if ($skin) {
 
 </section>
 
-<script type="text/javascript">
+<script>
 
     $(function () {
 

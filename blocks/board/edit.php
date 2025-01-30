@@ -66,7 +66,7 @@ if (is_object($renderer)) {
 
 ?>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('button[data-toolbar-button-action=exit-board]').on('click', function () {
             ConcreteEvent.fire('EditModeExitInline');

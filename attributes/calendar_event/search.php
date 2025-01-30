@@ -9,7 +9,7 @@
 </div>
 
 
-<script type="text/javascript">
+<script>
     $(function() {
         $('select[data-select=calendar]').on('change', function() {
             if ($(this).val()) {

@@ -59,7 +59,7 @@ use Concrete\Core\Entity\Attribute\Key\Settings\UserGroupSettings;
 
 </fieldset>
 
-<script type="text/javascript">
+<script>
 $(function() {
     $('input[name=akDisplayGroupsBeneathSpecificParent]').on('change', function() {
         var display = $('input[name=akDisplayGroupsBeneathSpecificParent]:checked').val();

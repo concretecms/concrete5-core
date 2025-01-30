@@ -98,7 +98,7 @@ $topic_id = Request::getInstance()->get('topic_id');
 
 </style>
 
-<script type="text/javascript">
+<script>
     $(function () {
         var admin = new ConcreteCalendarAdmin($('body'));
     });

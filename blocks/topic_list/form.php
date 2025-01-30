@@ -79,7 +79,7 @@ $topicAttributeKeyHandle = $topicAttributeKeyHandle ?? null;
 
 </fieldset>
 
-<script type="text/javascript">
+<script>
 $(function() {
     $("select#modeSelect").on('change', function() {
         if ($(this).val() == 'S') {

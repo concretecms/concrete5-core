@@ -303,7 +303,7 @@ for ($i = 0; $i < 7; ++$i) {
 </div>
 
 <!--suppress EqualityComparisonWithCoercionJS, JSJQueryEfficiency -->
-<script type="text/javascript">
+<script>
     $(function () {
         var ccm_accessEntityCalculateRepeatOptions = function () {
             // get the difference between start date and end date

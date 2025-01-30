@@ -212,7 +212,7 @@ $token = $app->make(Token::class);
 <?php } ?>
 
 <!--suppress ES6ConvertVarToLetConst, JSCheckFunctionSignatures, JSDuplicatedDeclaration -->
-<script type="text/javascript">
+<script>
     $(function () {
         $('[data-dialog]').on('click', function () {
             var $element = $('#ccm-dialog-' + $(this).attr('data-dialog'));

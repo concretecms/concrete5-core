@@ -83,7 +83,7 @@ $require_version_comments = (bool) Config::get('concrete.misc.require_version_co
 
 </form>
 
-<script type="text/javascript">
+<script>
 $(function() {
     setTimeout("$('#ccm-check-in-comments').focus();",300);
     $('#ccm-check-in').concreteAjaxForm();

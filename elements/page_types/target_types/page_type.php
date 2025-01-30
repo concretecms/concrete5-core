@@ -41,7 +41,7 @@ if (isset($pagetype) && is_object($pagetype) && $pagetype->getPageTypePublishTar
 	<?= $pageSelector->selectPage('startingPointPageIDPageType', $startingPointPageID) ?>
 </div>
 
-<script type="text/javascript">
+<script>
 	$(function() {
 		$('select[name=selectorFormFactorPageType]').on('change', function() {
 			$('div[data-page-type-form-factor-display]').hide();

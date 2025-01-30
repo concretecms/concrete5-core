@@ -120,7 +120,7 @@ EOT;
         return <<<EOL
 <input type="hidden" name="{$field}" value="{$selectedNodeID}">
 <div data-group-selector="{$identifier}"></div>
-<script type="text/javascript">
+<script>
 jQuery(function() {
     $('[data-group-selector={$identifier}]').concreteTree({
             'treeID': {$treeID},

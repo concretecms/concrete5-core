@@ -23,7 +23,7 @@ $renderer->render($instance);
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
 
     $(function() {
         Concrete.Vue.activateContext('cms', function (Vue, config) {

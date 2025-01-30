@@ -52,7 +52,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
     </section>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.saveSeo');
         ConcreteEvent.subscribe('AjaxFormSubmitSuccess.saveSeo', function(e, data) {

@@ -41,7 +41,7 @@ $attributes = \Concrete\Core\Attribute\Key\EventKey::getList();
 
 </div>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('.ccm-attribute-image-file-image').magnificPopup({
             type: 'image',

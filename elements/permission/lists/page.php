@@ -43,7 +43,7 @@
 
 
 
-	<script type="text/javascript">
+	<script>
         ccm_PagePermissionLaunchDialog = function(link) {
             var dupe = $(link).attr('data-duplicate');
             if (dupe != 1) {

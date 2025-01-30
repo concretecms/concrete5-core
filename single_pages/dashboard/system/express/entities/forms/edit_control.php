@@ -59,7 +59,7 @@ $token = $app->make(Token::class);
 </div>
 
 <!--suppress ES6ConvertVarToLetConst -->
-<script type="text/javascript">
+<script>
     $(function () {
         $('form[data-form=edit-control]').each(function () {
             var controlID = $(this).attr('data-form-control');

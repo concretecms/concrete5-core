@@ -85,7 +85,7 @@
 
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         ConcreteCalendarAdmin.setupVersionsTable($('table#ccm-calendar-event-versions'));
     });

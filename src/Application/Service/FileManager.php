@@ -88,7 +88,7 @@ class FileManager
 <div data-concrete-file-input="{$uniqid}">
     <concrete-file-input {$filters} :file-id="{$fID}" choose-text="{$chooseText}" input-name="{$inputName}"></concrete-file-input>
 </div>
-<script type="text/javascript">
+<script>
 $(function() {
     Concrete.Vue.activateContext('cms', function (Vue, config) {
         new Vue({

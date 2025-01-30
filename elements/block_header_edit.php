@@ -28,7 +28,7 @@ if ($b->getBlockTypeHandle() === BLOCK_HANDLE_SCRAPBOOK_PROXY) {
 ?>
 <a name="_edit<?= $b->getBlockID() ?>"></a>
 
-<script type="text/javascript">
+<script>
 <?php
 
 $url = $ci->getBlockTypeJavaScriptURL($bt);

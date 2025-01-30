@@ -8,6 +8,6 @@ defined('C5_EXECUTE') or die('Access Denied.');
 
  ?>
 
-<script type="text/javascript">
+<script>
 var ccm_permissionDialogURL = CCM_DISPATCHER_FILENAME + '/ccm/system/dialogs/permissions/block_type'; 
 </script>

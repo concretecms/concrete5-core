@@ -12,7 +12,7 @@ $ih = $app->make('helper/concrete/ui');
 $delConfirmJS = t('Are you sure you want to remove this workflow?');
 ?>
 
-<script type="text/javascript">
+<script>
     deleteWorkflow = function() {
         if (confirm('<?=$delConfirmJS?>')) {
             location.href = "<?=$view->action('delete', $workflow->getWorkflowID(), $valt->generate('delete_workflow'))?>";

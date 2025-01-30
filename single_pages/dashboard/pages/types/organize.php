@@ -30,7 +30,7 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $('ul[data-sort]').sortable({
             connectWith: 'ul[data-sort]'

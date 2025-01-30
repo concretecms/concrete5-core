@@ -2,7 +2,7 @@
 
 <?php $url = $type->getControllerUrl(); ?>
 
-<script type="text/javascript">
+<script>
 ccm_choosePermissionAccessEntityFileUploader = function() {
 	$('#ccm-permissions-access-entity-form .btn-group').removeClass('open');
 	$.getJSON('<?=$url?>', function(r) {

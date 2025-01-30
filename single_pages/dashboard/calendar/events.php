@@ -84,7 +84,7 @@ View::element('calendar/header', array(
     }
 </style>
 
-<script type="text/javascript">
+<script>
     $(function () {
         var $dp = $("<input type='text' />").hide().datepicker({
             onSelect: function(dateText, inst) {
@@ -204,7 +204,7 @@ View::element('calendar/header', array(
     </tbody>
 </table>
 
-<script type="text/javascript">
+<script>
     $(function() {
         var admin = new ConcreteCalendarAdmin($('body'));
     });

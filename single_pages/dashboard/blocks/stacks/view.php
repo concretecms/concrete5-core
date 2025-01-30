@@ -290,7 +290,7 @@ if (isset($neutralStack)) {
         }
         ?>
 
-        <script type="text/javascript">
+        <script>
             var showApprovalButton = function () {
                 $('#ccm-stack-list-approve-button').show().addClass("animated fadeIn");
             };
@@ -498,7 +498,7 @@ if ($showGlobalAreasFolder || !empty($stacks)) {
             </tbody>
         </table>
     </div>
-    <script type="text/javascript">
+    <script>
         $(function () {
             var $tbody = $('table.ccm-search-results-table tbody');
             $('.ccm-search-results-menu-launcher a[data-action=delete]').on('click', function () {
@@ -669,7 +669,7 @@ if ($showGlobalAreasFolder || !empty($stacks)) {
         </div>
     </div>
 
-    <script type="text/javascript">
+    <script>
         $(function () {
             $('button[data-dialog=add-stack]').on('click', function () {
                 jQuery.fn.dialog.open({

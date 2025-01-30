@@ -79,7 +79,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
 
 </section>
 
-<script type="text/javascript">
+<script>
 
     Concrete.Vue.activateContext('cms', function (Vue, config) {
         new Vue({

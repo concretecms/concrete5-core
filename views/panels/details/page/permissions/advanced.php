@@ -125,7 +125,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
 } ?>
 
 
-<script type="text/javascript">
+<script>
     var inheritanceVal = '';
 
     ccm_pagePermissionsCancelInheritance = function() {

@@ -52,7 +52,7 @@ if (isset($key) && is_object($key)) {
     </div>
 </fieldset>
 
-<script type="text/javascript">
+<script>
 $(function() {
 	$('input[name=uakProfileEdit]').click(function() {
 		if ($(this).prop('checked')) {

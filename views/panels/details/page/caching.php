@@ -145,7 +145,7 @@ switch (Config::get('concrete.cache.full_page_lifetime')) {
 
 </section>
 
-<script type="text/javascript">
+<script>
     ccm_settingsSetupCacheForm = function (reset) {
         var obj = $('input[name=cCacheFullPageContent]:checked');
         if (obj.attr('enable-cache') == 1) {

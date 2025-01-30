@@ -19,7 +19,7 @@ $txt = Loader::helper('text'); ?>
                         <div class="alert alert-warning">
                             <?php echo t('This attribute set is locked. It cannot be deleted, and its handle cannot be changed.')?>
                         </div>
-                        <script type="text/javascript">
+                        <script>
                             $(function() {
                                 $('#asHandle').attr('disabled','disabled');
                             });

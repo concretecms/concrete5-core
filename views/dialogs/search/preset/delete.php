@@ -12,7 +12,7 @@
         </div>
     </form>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.SavedSearchDeleted');
             ConcreteEvent.subscribe('AjaxFormSubmitSuccess.SavedSearchDeleted', function(e, data) {

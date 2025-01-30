@@ -18,7 +18,7 @@ $valt = app(Token::class);
 <?php
 } ?>
 <input type="hidden" name="pkCategoryHandle" value="<?=$pkCategory->getPermissionKeyCategoryHandle()?>" />
-<script type="text/javascript">
+<script>
 
 $(function() {
 	$('#ccm-permissions-list-copy-permissions-<?= $uid ?>').click(function() {

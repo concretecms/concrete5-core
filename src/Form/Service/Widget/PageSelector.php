@@ -116,7 +116,7 @@ EOL;
     input-name="{$key}"
     ></concrete-page-select>
 </div>
-<script type="text/javascript">
+<script>
 $(function() {
     Concrete.Vue.activateContext('cms', function (Vue, config) {
         new Vue({
@@ -164,7 +164,7 @@ EOL;
 
         $html = <<<EOL
         <div data-page-sitemap-selector="{$identifier}"></div>
-        <script type="text/javascript">
+        <script>
         $(function() {
             $('[data-page-sitemap-selector={$identifier}]').concretePageSitemapSelector({$args});
         });
@@ -209,7 +209,7 @@ EOL;
 
         $html = <<<EOL
         <div data-page-sitemap-selector="{$identifier}"></div>
-        <script type="text/javascript">
+        <script>
         $(function() {
             $('[data-page-sitemap-selector={$identifier}]').concretePageSitemapSelector({$args});
         });

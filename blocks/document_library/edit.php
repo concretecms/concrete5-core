@@ -389,7 +389,7 @@ $hideFolders = isset($hideFolders) ? $hideFolders : false;
 </div>
 
 <!--suppress EqualityComparisonWithCoercionJS -->
-<script type="text/javascript">
+<script>
     $(function () {
         $('input[type=checkbox][data-options-toggle]').on('change', function () {
             if ($(this).is(':checked')) {

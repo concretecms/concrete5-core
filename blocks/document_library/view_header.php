@@ -96,7 +96,7 @@ if (isset($breadcrumbs) && $breadcrumbs) { ?>
 }
 ?>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $.concreteDocumentLibrary({
             'bID': '<?=$bID?>',

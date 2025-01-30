@@ -174,7 +174,7 @@ $form = $app->make(Form::class);
                     <div data-tree="<?php echo $tree->getTreeID() ?>"></div>
 
                     <!--suppress ES6ConvertVarToLetConst, JSDuplicatedDeclaration -->
-                    <script type="text/javascript">
+                    <script>
                         $(function () {
 
                             $('[data-tree]').concreteTree({

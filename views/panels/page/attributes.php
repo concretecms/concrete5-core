@@ -46,7 +46,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
 
 </section>
 
-<script type="text/javascript">
+<script>
     ConcreteMenuPageAttributes = {
 
         selectAttributeKey: function (akID) {

@@ -34,7 +34,7 @@ if (is_object($renderer)) { ?>
     </p>
 <?php } ?>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('form input, form select, form textarea').each(function () {
             if ($(this).is(':visible')) {

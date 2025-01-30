@@ -119,7 +119,7 @@ $showHideOptions = [''=>t('Set displayed by default'), 'collapsed'=>t('Set hidde
 </div>
 
 
-<script type="text/javascript">
+<script>
 
 var Composer = {
 

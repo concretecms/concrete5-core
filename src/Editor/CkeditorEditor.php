@@ -508,7 +508,7 @@ EOL;
         $jsFunc = $this->getEditorInitJSFunction($options);
 
         $html = <<<EOL
-        <script type="text/javascript">
+        <script>
         $(function() {
             var initEditor = {$jsFunc};
             $('#{$identifier}').attr('contenteditable', 'true');

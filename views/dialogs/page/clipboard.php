@@ -43,7 +43,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
     </ul>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $('#ccm-panel-add-clipboard-block-list').on('click', 'a', function() {
             ConcreteEvent.publish('ClipboardAddBlock', {

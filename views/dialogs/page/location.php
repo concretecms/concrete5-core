@@ -150,7 +150,7 @@ $navHelper = $app->make(Navigation::class);
 </div>
 
 <!--suppress JSJQueryEfficiency, ES6ConvertVarToLetConst -->
-<script type="text/javascript">
+<script>
     var renderPagePath = _.template(
         $('script#pagePath-template').html()
     );

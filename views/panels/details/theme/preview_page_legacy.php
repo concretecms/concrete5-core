@@ -13,7 +13,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
     <button class="float-end btn btn-success" type="button" onclick="ConcreteEvent.publish('ThemeCustomizerSaveStyles')"><?= t('Save Styles') ?></button>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         Concrete.Vue.activateContext('cms', function (Vue, config) {
             new Vue({

@@ -39,7 +39,7 @@ foreach ($permissions as $pk) {
 <?php if ($enablePermissions) {
     ?>
 
-	<script type="text/javascript">
+	<script>
 	ccm_permissionLaunchDialog = function(link) {
 		var dupe = $(link).attr('data-duplicate');
 		if (dupe != 1) {

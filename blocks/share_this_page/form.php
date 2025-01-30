@@ -50,7 +50,7 @@ use Concrete\Core\Sharing\ShareThisPage\Service;
     </div>
 </script>
 
-<script type="text/javascript">
+<script>
     $(function () {
         let selectedServices = <?php echo json_encode($selectedServices); ?>;
         let availableServices = <?php echo json_encode($availableServices); ?>;

@@ -119,7 +119,7 @@ defined('C5_EXECUTE') or die("Access Denied."); ?>
     ?>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('#ccm-bulk-page-caching-form').on('change', 'input[name=cCacheFullPageContent]', function() {
             let cCacheFullPageContent = $('input[name=cCacheFullPageContent]:checked').val()

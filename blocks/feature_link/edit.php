@@ -125,7 +125,7 @@ $thumbnailTypes['0'] = t('Full Size');
     </div>
 </fieldset>
 
-<script type="text/javascript">
+<script>
     $(function() {
 
         Concrete.Vue.activateContext('cms', function (Vue, config) {

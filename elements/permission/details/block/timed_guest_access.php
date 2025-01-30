@@ -74,7 +74,7 @@ foreach ($list as $pa) {
 </div>
 
 <!--suppress JSUnresolvedVariable -->
-<script type="text/javascript">
+<script>
     $(function () {
         $("#ccm-permissions-timed-guest-access-form").ajaxForm({
             beforeSubmit: function () {

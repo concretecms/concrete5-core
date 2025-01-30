@@ -37,7 +37,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
 
 	</form>
 
-	<script type="text/javascript">
+	<script>
 	$(function() {
 		var $form = $('form[data-form=delete-block]'),
 			options = {};

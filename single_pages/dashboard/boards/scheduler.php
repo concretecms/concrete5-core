@@ -131,7 +131,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
 
 </form>
 
-<script type="text/javascript">
+<script>
     $(function () {
         Concrete.Vue.activateContext('backend', function (Vue, config) {
             new Vue({

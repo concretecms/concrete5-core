@@ -1,7 +1,7 @@
 <?php defined('C5_EXECUTE') or die("Access Denied."); ?>
 <?php $url = $type->getControllerUrl(); ?>
 
-<script type="text/javascript">
+<script>
     ccm_choosePermissionAccessEntitySiteGroup = function() {
         $.fn.dialog.open({
             title: '<?=t('Choose Site Group')?>',

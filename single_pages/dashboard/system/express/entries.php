@@ -8,7 +8,7 @@ $jh = Core::make('helper/json');
 	<div data-tree="<?=$tree->getTreeID()?>">
 	</div>
 
-	<script type="text/javascript">
+	<script>
 	$(function() {
 
 		$('[data-tree]').concreteTree({

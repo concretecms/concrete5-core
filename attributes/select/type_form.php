@@ -147,7 +147,7 @@ function getAttributeOptionHTML($v)
 
 
 </fieldset>
-<script type="text/javascript">
+<script>
 
 	var ccmAttributesHelper={
 		valuesBoxDisabled:function(typeSelect){

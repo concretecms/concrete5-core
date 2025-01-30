@@ -57,7 +57,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
 
 	</form>
 
-	<script type="text/javascript">
+	<script>
 	$(function() {
         ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.sitemapDelete');
 		ConcreteEvent.subscribe('AjaxFormSubmitSuccess.sitemapDelete', function(e, data) {

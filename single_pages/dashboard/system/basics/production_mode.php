@@ -82,7 +82,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
         </div>
     </div>
 
-<script type="text/javascript">
+<script>
 $(function() {
     $('form[data-form=production-mode]').on('submit', function(e) {
         const mode = $(this).find('input[name=production_mode]:checked').val()

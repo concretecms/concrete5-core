@@ -14,7 +14,7 @@ if (isset($cp)) {
     if ($cp->canViewToolbar()) {
         ?>
 
-        <script type="text/javascript">
+        <script>
             <?php
             $valt = Loader::helper('validation/token');
             echo "var CCM_SECURITY_TOKEN = '" . $valt->generate() . "';\n";
@@ -60,7 +60,7 @@ if (isset($cp)) {
             $panelRelations = URL::to('/ccm/system/panels/page/relations');
 
             $js = <<<EOL
-<script type="text/javascript">$(function() {
+<script>$(function() {
 	$('html').addClass('$htmlTagClasses');
 	ConcretePanelManager.register({'identifier': 'dashboard', 'position': 'right', url: '{$panelDashboard}'});
 	ConcretePanelManager.register({'identifier': 'page', url: '{$panelPage}'});
@@ -78,7 +78,7 @@ if (isset($cp)) {
 EOL;
         } else {
             $js = <<<EOL
-<script type="text/javascript">$(function() {
+<script>$(function() {
 	$('html').addClass('ccm-toolbar-visible');
 	{$startEditMode}
 });
@@ -90,7 +90,7 @@ EOL;
         $cih = Loader::helper('concrete/ui');
         if (Localization::activeLanguage() != 'en') {
             $v->addFooterItem(
-                '<script type="text/javascript">$(function() { jQuery.datepicker.setDefaults({dateFormat: \'yy-mm-dd\'}); });</script>'
+                '<script>$(function() { jQuery.datepicker.setDefaults({dateFormat: \'yy-mm-dd\'}); });</script>'
             );
         }
         if (Config::get('concrete.messenger.consume.method') === 'app') {
@@ -98,7 +98,7 @@ EOL;
             $transport = $transportManager->getReceivers()->get(TransportInterface::DEFAULT_ASYNC);
             if ($transport instanceof MessageCountAwareInterface && $transport->getMessageCount() > 0) {
                 $v->addFooterItem(
-                    '<script type="text/javascript">$(function() { ConcreteQueueConsumer.consume(\'' . $valt->generate('consume_messages') . '\') });</script>'
+                    '<script>$(function() { ConcreteQueueConsumer.consume(\'' . $valt->generate('consume_messages') . '\') });</script>'
                 );
             }
         }

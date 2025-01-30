@@ -10,7 +10,7 @@ if (count($items) > 0): ?>
         <?php View::element('workflow/progress/categories/user/table_data', array('items' => $items, 'list' => $list)) ?>
     </div>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             var init = function() {
                 $('.dialog-launch').dialog();

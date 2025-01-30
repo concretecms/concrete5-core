@@ -75,7 +75,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
     </div>
 </form>
 
-<script type="text/javascript">
+<script>
     $('input[name=enableAutomaticUserDeactivation]').on('change', function() {
         if ($(this).is(':checked')) {
             $('div[data-group=user-deactivation-days]').show();

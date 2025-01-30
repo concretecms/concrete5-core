@@ -36,7 +36,7 @@ use Concrete\Core\Area\Layout\Preset\UserPreset;
 </div>
 
 <!--suppress ES6ConvertVarToLetConst -->
-<script type="text/javascript">
+<script>
     $(function () {
         $('a[data-action=delete-area-layout-preset]').on('click', function () {
             var $row = $(this).parent().parent();

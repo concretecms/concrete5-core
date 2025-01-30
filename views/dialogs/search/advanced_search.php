@@ -68,7 +68,7 @@
 </div>
 
 <?php if ($supportsSavedSearch) { ?>
-<script type="text/javascript">
+<script>
     $(function() {
         $('div[data-dialog=advanced-search]').concreteAdvancedSearchPresetSelector()
     })

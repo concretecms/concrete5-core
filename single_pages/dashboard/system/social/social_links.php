@@ -44,7 +44,7 @@
     <?php
     } ?>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             $('button[data-dialog=delete-link]').on('click', function() {
                 jQuery.fn.dialog.open({

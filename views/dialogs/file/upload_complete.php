@@ -107,7 +107,7 @@ use Concrete\Core\View\View;
 </script>
 
 <!--suppress JSUnusedAssignment, JSUnresolvedVariable -->
-<script type="text/javascript">
+<script>
     (function($) {
         $(function () {
             let _sets = _.template($('script.upload-complete-file-sets').html());

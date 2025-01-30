@@ -27,7 +27,7 @@ $resolverManager = app(ResolverManagerInterface::class);
 	</div>
 </div>
 
-<script type="text/javascript">
+<script>
 var concreteComposerAddPageTimer = false;
 $(function() {
 	var $urlSlugField = $('div[data-composer-field=url_slug] input');

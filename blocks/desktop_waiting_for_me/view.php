@@ -89,7 +89,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
 
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $('div[data-list=notification]').concreteNotificationList();
     });

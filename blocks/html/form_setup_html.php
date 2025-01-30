@@ -11,7 +11,7 @@
     }
 </style>
 
-<script type="text/javascript">
+<script>
     $(function() {
         var editor = ace.edit("ccm-block-html-value");
         editor.setTheme("ace/theme/eclipse");

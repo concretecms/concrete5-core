@@ -28,7 +28,7 @@ class CalendarEventSelector
         $identifier = $identifier->getString(32);
         $html = <<<EOL
         <div data-calendar-event-selector="{$identifier}"></div>
-        <script type="text/javascript">
+        <script>
         $(function() {
             $('[data-calendar-event-selector={$identifier}]').concreteCalendarEventSelector({$args});
         });

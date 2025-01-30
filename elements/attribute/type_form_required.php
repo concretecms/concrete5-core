@@ -33,7 +33,7 @@ if (is_object($key)) {
     $ih = Loader::helper('concrete/ui');
     $delConfirmJS = t('Are you sure you want to remove this attribute?');
     ?>
-	<script type="text/javascript">
+	<script>
 	deleteAttribute = function() {
 		if (confirm('<?=$delConfirmJS?>')) {
 			location.href = "<?=$view->action('delete', $key->getAttributeKeyID(), $valt->generate('delete_attribute'))?>";

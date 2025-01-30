@@ -86,7 +86,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
     </section>
 </div>
 
-<script type="text/javascript">
+<script>
 
     var renderAttribute = _.template(
         $('script.attribute').html()

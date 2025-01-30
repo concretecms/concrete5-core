@@ -115,7 +115,7 @@ $responseObject = $permissionChecker->getResponseObject();
     </form>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('input[name=cbOverrideBlockTypeCacheSettings]').on('change', function () {
             if ($(this).is(':checked')) {

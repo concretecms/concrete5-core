@@ -10,6 +10,6 @@ $pk->setPermissionObject($c);
 <?php Loader::element("permission/detail", array('permissionKey' => $pk)); ?>
 
 
-<script type="text/javascript">
+<script>
 var ccm_permissionDialogURL = CCM_DISPATCHER_FILENAME + '/ccm/system/dialogs/permissions/collection?cID=<?= $c->getCollectionID() ?>'; 
 </script>

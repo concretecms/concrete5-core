@@ -93,7 +93,7 @@ $token = $app->make(Token::class);
 </form>
 
 <!--suppress ES6ConvertVarToLetConst, EqualityComparisonWithCoercionJS, JSJQueryEfficiency, JSDuplicatedDeclaration -->
-<script type="text/javascript">
+<script>
     $(function () {
         $('input[data-toggle=association-property]').on('change', function () {
             var disabled;

@@ -74,7 +74,7 @@ if (!isset($showCustomizeButton)) {
     </form>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
 
         <?php if ($canEdit) { ?>

@@ -86,7 +86,7 @@ $form = $app->make(Form::class);
 </section>
 
 <!--suppress EqualityComparisonWithCoercionJS -->
-<script type="text/javascript">
+<script>
     $(function () {
         ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.saveSeo');
         ConcreteEvent.subscribe('AjaxFormSubmitSuccess.saveSeo', function (e, data) {

@@ -58,7 +58,7 @@ if (count($assignments) > 0) {
 <input type="hidden" name="pkID[<?=$pk->getPermissionKeyID(); ?>]" value="<?=$paID; ?>" data-pkID="<?=$pk->getPermissionKeyID(); ?>" />
 </div>
 
-<script type="text/javascript">
+<script>
 $(function() {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('.ccm-permission-access-line span[title]'))
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

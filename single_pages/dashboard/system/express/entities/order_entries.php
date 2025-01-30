@@ -77,7 +77,7 @@ $token = $app->make(Token::class);
                 </tbody>
             </table>
 
-            <script type="text/javascript">
+            <script>
                 $(function () {
                     $('table[data-table=entries] tbody').sortable({
                         handle: 'a[data-command=move-entry]',

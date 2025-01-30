@@ -56,7 +56,7 @@ $request = $app->make(Request::class);
 </div>
 
 <!--suppress ES6ConvertVarToLetConst, EqualityComparisonWithCoercionJS -->
-<script type="text/javascript">
+<script>
     $(function () {
         var $input = $('input[name=arLayoutPresetName]', 'form[data-dialog-form=save-area-layout-presets]');
         $('select[name=arLayoutPresetID]', 'form[data-dialog-form=save-area-layout-presets]').on('change', function () {

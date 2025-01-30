@@ -73,7 +73,7 @@ $previewContentsURL = URL::to('/ccm/system/panels/page/design/preview_contents')
     </div>
 
 </div>
-<script type="text/javascript">
+<script>
 
     $(function () {
         $('html').addClass('h-100 ccm-panel-ready')

@@ -20,7 +20,7 @@ if (!isset($hideDashboardPanel)) {
     $hideDashboardPanel = false;
 }
 
-$view->addFooterItem('<script type="text/javascript">$(function() { ConcreteToolbar.start(); });</script>');
+$view->addFooterItem('<script>$(function() { ConcreteToolbar.start(); });</script>');
 $view->addHeaderItem('<meta name="viewport" content="width=device-width, initial-scale=1">');
 
 $u = $app->make(Concrete\Core\User\User::class);

@@ -8,7 +8,7 @@ if (isset($c) && is_object($c)) {
 }
 ?>
 
-<script type="text/javascript" src="<?=$view->getThemePath()?>/main.js"></script>
+<script src="<?=$view->getThemePath()?>/main.js"></script>
 
 </body>
 </html>

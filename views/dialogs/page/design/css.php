@@ -20,7 +20,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
         }
     </style>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             var editor = ace.edit("ccm-page-design-custom-css");
             editor.setTheme("ace/theme/eclipse");

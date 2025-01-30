@@ -19,7 +19,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
 
     <button type="button" class="btn btn-danger" data-action="delete-attribute"><?= t('Delete Attribute') ?></button>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $('button[data-action=delete-attribute]').on('click', function() {
             var $element = $('#ccm-dialog-delete-attribute');

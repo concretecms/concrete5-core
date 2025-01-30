@@ -66,7 +66,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
     </section>
 <?php } ?>
 
-<script type="text/javascript">
+<script>
     replaceLinkWithPage = function(menuID, link, icon, name) {
         var $link = $('a[data-launch-multilingual-menu=' + menuID + ']');
         var newLink = '<a href="' + link + '">' + icon + ' ' + name + '<\/a>';

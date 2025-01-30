@@ -135,7 +135,7 @@ echo $this->action('submit'); ?>" v-cloak data-vue-app="opengraph">
 
 </form>
 
-<script type="text/javascript">
+<script>
     $(function () {
         Concrete.Vue.activateContext('backend', function (Vue, config) {
             new Vue({

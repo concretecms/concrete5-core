@@ -65,7 +65,7 @@ $folder = $file->getFileFolderObject();
 
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $('a[data-action=rescan-file]').on('click', function (e) {
             e.preventDefault()

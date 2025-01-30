@@ -117,7 +117,7 @@ if ($paID > 0) {
     </form>
 </div>
 
-<script type="text/javascript">
+<script>
 
     <?php
     $permissionObject = $permissionKey->getPermissionObject();

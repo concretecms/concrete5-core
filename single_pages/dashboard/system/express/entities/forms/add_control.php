@@ -54,7 +54,7 @@ $token = $app->make(Token::class);
 
 
 <!--suppress ES6ConvertVarToLetConst -->
-<script type="text/javascript">
+<script>
     $(function () {
         $('a[data-select=control-item]').on('click', function () {
             var type = $(this).attr('data-item-type'),

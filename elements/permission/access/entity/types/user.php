@@ -2,7 +2,7 @@
 
 <?php $url = $type->getControllerUrl(); ?>
 
-<script type="text/javascript">
+<script>
     (function() {
         Concrete.event.unbind('UserSearchDialogSelectUser.core');
         Concrete.event.bind('UserSearchDialogSelectUser.core', function(event, data) {

@@ -31,7 +31,7 @@ if ($_REQUEST['message'] == 'custom_options_saved') {
 <?php 
 } ?>
 </div>
-<script type="text/javascript">
+<script>
 $(function() {
 	$("#ccm-permissions-message-list").show('highlight', {'color': '#fff'}, function() {
 		setTimeout(function() {

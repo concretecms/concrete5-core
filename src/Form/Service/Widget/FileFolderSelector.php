@@ -32,7 +32,7 @@ class FileFolderSelector
         $html = <<<EOL
         <input type="hidden" name="{$field}" value="{$selected}">
         <div data-file-folder-selector="{$identifier}"></div>
-        <script type="text/javascript">
+        <script>
         $(function() {
             $('[data-file-folder-selector={$identifier}]').concreteTree({
                     ajaxData: {

@@ -91,7 +91,7 @@ View::element(
 );
 ?>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('#ccm-file-set-list input.tristate').tristate({
             change: function (state) {

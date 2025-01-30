@@ -156,7 +156,7 @@ $form = $app->make(Form::class);
     </div>
 </form>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('select[name=owned_by]').on('change', function () {
             if ($(this).val()) {

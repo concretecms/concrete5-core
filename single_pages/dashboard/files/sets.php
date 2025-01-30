@@ -21,7 +21,7 @@ $dh = $app->make(Date::class);
 
 <?php if ($this->controller->getTask() == 'view_detail'): ?>
 
-    <script type="text/javascript">
+    <script>
         let deleteFileSet = function () {
             if (confirm('<?php echo h(t('Are you sure you want to permanently remove this file set?')); ?>')) {
                 location.href = "<?php echo Url::to('/dashboard/files/sets', 'delete', $fs->getFileSetID(), $validation_token->generate('delete_file_set'))?>";

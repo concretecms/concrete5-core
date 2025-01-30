@@ -123,7 +123,7 @@
 	<?php
 } ?>
 
-<script type="text/javascript">
+<script>
 <?php
 
 if ($controller->getAction() === 'edit') {

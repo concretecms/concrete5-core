@@ -137,7 +137,7 @@
 <?php 
 } ?>
 
-<script type="text/javascript">
+<script>
 $(function() {
 	$("#ccm-tab-content-custom-options select").change(function() {
 		if ($(this).val() == 'C') {

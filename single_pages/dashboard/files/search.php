@@ -189,7 +189,7 @@ if ($fp->canAddFile() || $fp->canSearchFiles()) { ?>
     <?php
     echo $result->getPagination()->renderView('dashboard'); ?>
 
-    <script type="text/javascript">
+    <script>
         (function ($) {
             $(function () {
                 $('table[data-search-results=files]').concreteFileManagerTable({

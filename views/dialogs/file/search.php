@@ -27,7 +27,7 @@ $filters = $configuration->getFilters();
         :dropzone-options="<?= h(json_encode(app(Dropzone::class)->getConfigurationOptions())) ?>"
     ></concrete-file-chooser>
 </div>
-<script type="text/javascript">
+<script>
 
     Concrete.Vue.activateContext('cms', function (Vue, config) {
         new Vue({

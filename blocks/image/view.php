@@ -186,7 +186,7 @@ if (is_object($f) && $f->getFileID()) {
 <?php } ?>
 
 <?php if (isset($foS) && $foS) { ?>
-    <script type="text/javascript">
+    <script>
         var images = document.getElementsByClassName('ccm-image-block-hover');
 
         for (var i = 0; i < images.length; i++) {

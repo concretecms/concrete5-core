@@ -49,7 +49,7 @@ $resolverManager = app(ResolverManagerInterface::class);
     }
 </style>
 
-<script type="text/javascript">
+<script>
     var slugHTML = '<?= addslashes($element) ?>';
     $(function() {
         $('a[data-composer-field=edit_url_slug]').on('click', function(e) {

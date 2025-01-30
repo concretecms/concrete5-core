@@ -2,7 +2,7 @@
 $form = Loader::helper('form');
 echo $form->textarea($editor->getConversationEditorInputName(), $editor->getConversationEditorMessageBody(), array('class' => 'unbound markdown_conversation_editor_'.$editor->getConversationObject()->getConversationID()));
 ?>
-<script type="text/javascript">
+<script>
 	var me = $('textarea.unbound.markdown_conversation_editor_<?=$editor->getConversationObject()->getConversationID()?>').first().removeClass('unbound');
 	(function($,window,me){
 		var obj = window.obj;

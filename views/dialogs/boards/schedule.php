@@ -24,7 +24,7 @@ foreach ($boardInstance->getRules() as $rule) {
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
 
     Concrete.Vue.activateContext('cms', function (Vue, config) {
         new Vue({

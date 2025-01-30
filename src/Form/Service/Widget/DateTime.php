@@ -295,7 +295,7 @@ class DateTime
                 $defaultDateJs = 'new Date(' . implode(', ', [$dateTime->format('Y'), $dateTime->format('n') - 1, (int) $dateTime->format('j')]) . ')';
             }
             $html .= <<<EOT
-<script type="text/javascript">
+<script>
 $(function() {
   $('#{$id}_dt_pub').datepicker($.extend({
     dateFormat: $dateFormat,
@@ -319,7 +319,7 @@ EOT;
         // Add the Javascript to handle the activation
         if ($includeActivation) {
             $html .= <<<EOT
-<script type="text/javascript">
+<script>
 $(function() {
   $('#{$id}_activate').click(function() {
     if ($(this).is(':checked')) {
@@ -396,7 +396,7 @@ EOT;
                 $defaultDateJs = 'new Date(' . implode(', ', [$dateTime->format('Y'), $dateTime->format('n') - 1, (int) $dateTime->format('j')]) . ')';
             }
             $html .= <<<EOT
-<script type="text/javascript">
+<script>
 $(function() {
   $('#{$id}_pub').datepicker($.extend({
     dateFormat: $dateFormat,

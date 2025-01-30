@@ -55,7 +55,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $('input[name=hasCustomSlotTemplates]').on('change', function() {
             if ($(this).is(':checked')) {

@@ -121,7 +121,7 @@ if ($calendar !== null) {
 </div>
 
 
-<script type="text/javascript">
+<script>
   $(function () {
 
     $('select[name=enableMoreDetails]').on('change', function () {

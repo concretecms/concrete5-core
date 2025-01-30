@@ -22,7 +22,7 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('div.ccm-block-desktop-latest-form-linked').on('click', function() {
             window.location.href = $(this).attr("data-link");

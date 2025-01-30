@@ -143,7 +143,7 @@ use Concrete\Core\User\Group\Search\Result\Result;
 
 <?= $result->getPagination()->renderView('dashboard') ?>
 
-<script type="text/javascript">
+<script>
     (function ($) {
         $(function () {
             $('table[data-search-results=groups]').concreteGroupManagerTable({

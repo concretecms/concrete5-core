@@ -42,7 +42,7 @@ $c = Page::getCurrentPage();
 
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         ConcreteEvent.subscribe('SavedSearchCreated', function(e, data) {
             window.location.reload();

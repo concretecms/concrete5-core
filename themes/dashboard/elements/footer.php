@@ -32,9 +32,9 @@ if (!empty($showPrivacyPolicyNotice)) { ?>
 
 <?php View::element('footer_required', ['disableTrackingCode' => true]); ?>
 
-<script type="text/javascript" src="<?=$view->getThemePath()?>/main.js"></script>
+<script src="<?=$view->getThemePath()?>/main.js"></script>
 
-<script type="text/javascript">
+<script>
 (function() {
     ConcretePanelManager.register({'overlay': false, 'identifier': 'dashboard', 'position': 'right', url: '<?=URL::to('/ccm/system/panels/dashboard')?>'});
     ConcretePanelManager.register({'identifier': 'sitemap', 'position': 'right', url: '<?=URL::to('/ccm/system/panels/sitemap')?>'});

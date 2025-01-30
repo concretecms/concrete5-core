@@ -34,7 +34,7 @@ use Concrete\Controller\Dialog\File\Bulk\Sets;
 </form>
 
 <!--suppress JSUnresolvedVariable -->
-<script type="text/javascript">
+<script>
     $(function () {
         ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.updateFileSets');
         ConcreteEvent.subscribe('AjaxFormSubmitSuccess.updateFileSets', function (e, data) {

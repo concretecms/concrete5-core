@@ -110,7 +110,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
     <button class="float-end btn btn-success" type="button" data-dialog-action="submit"><?= t('Save Changes') ?></button>
 </div>
 
-<script type="text/javascript">
+<script>
 
 var renderPagePath = _.template(
     $('script#pagePath-template').html()

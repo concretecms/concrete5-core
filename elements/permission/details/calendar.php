@@ -10,6 +10,6 @@ $pk->setPermissionObject($calendar);
 
 <?php Loader::element("permission/detail", array('permissionKey' => $pk)); ?>
 
-<script type="text/javascript">
+<script>
     var ccm_permissionDialogURL = '<?=URL::to("/ccm/calendar/dialogs/permissions", "calendar")?>?caID=<?= $calendar->getID() ?>';
 </script>

@@ -288,7 +288,7 @@ if ($install_config) {
 
     <?php } else if ($installStep === $controller::STEP_CONFIGURATION) { ?>
 
-        <script type="text/javascript">
+        <script>
             $(function () {
                 $("#sample-content-selector td").click(function () {
                     $(this).parent().find('input[type=radio]').prop('checked', true);
@@ -589,7 +589,7 @@ if ($install_config) {
 
     <?php } else if ($installStep === $controller::STEP_INSTALL) { ?>
 
-    <script type="text/javascript">
+    <script>
         $(function () {
             var inviteToStayHere = false;
 

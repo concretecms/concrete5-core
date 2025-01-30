@@ -92,7 +92,7 @@ $token = $app->make(Token::class);
             }
         </style>
 
-        <script type="text/javascript">
+        <script>
             $(function () {
                 ConcreteEvent.subscribe('AjaxFormSubmitSuccess', function (e, data) {
                     if (data.form === 'delete-file') {

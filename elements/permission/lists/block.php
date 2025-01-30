@@ -86,7 +86,7 @@ foreach ($permissions as $pk) {
 
 </div>
 
-<script type="text/javascript">
+<script>
 
 ccm_permissionLaunchDialog = function(link) {
 	var dupe = $(link).attr('data-duplicate');

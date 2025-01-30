@@ -210,7 +210,7 @@ if ($version) {
 
 </div>
 
-<script type="text/javascript">
+<script>
     var CCM_EDITOR_SECURITY_TOKEN = "<?php echo Loader::helper('validation/token')->generate('editor')?>";
     _.defer(function() {
         var radios = $("input[name='edit_type']"),

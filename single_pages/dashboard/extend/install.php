@@ -238,7 +238,7 @@ if ($this->controller->getTask() == 'install_package' && isset($showInstallOptio
                     </div>
                 </div>
             </div>
-            <script type="text/javascript">
+            <script>
             $(function () {
                 $('#ccm-install-post-notes').dialog({
                     width: 500,

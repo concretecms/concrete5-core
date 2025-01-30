@@ -70,7 +70,7 @@ $form = $app->make(Form::class);
     </div>
 </script>
 
-<script type="text/javascript">
+<script>
     (function($) {
         $(function () {
             let _checkbox = _.template($('script.ccm-template-file-set-checkbox').html());

@@ -34,7 +34,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
     </div>
 </section>
 
-<script type="text/javascript">
+<script>
 var ConcretePageComposerDetail = {
 
     saving: false,

@@ -67,7 +67,7 @@
         </div>
     </div>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             $('table[data-table=category-colors] [data-color-picker]').each(function() {
                 $(this).spectrum('disable');

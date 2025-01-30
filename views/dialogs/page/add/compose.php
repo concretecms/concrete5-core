@@ -29,7 +29,7 @@ $composer = Core::make("helper/concrete/composer");
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $('form[data-dialog-form=add-page-compose]').concreteAjaxForm();
         $('button[data-composer-dialog-action=publish]').on('click', function() {

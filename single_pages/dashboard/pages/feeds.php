@@ -78,7 +78,7 @@ if ($controller->getAction() == 'add'
         <?php
     }
     ?>
-    <script type="text/javascript">
+    <script>
         $(function () {
             $('button[data-dialog=delete-feed]').on('click', function () {
                 jQuery.fn.dialog.open({
@@ -215,7 +215,7 @@ if ($controller->getAction() == 'add'
         </div>
     </form>
 
-    <script type="text/javascript">
+    <script>
         $(function () {
             var treeViewTemplate = $('.tree-view-template');
 

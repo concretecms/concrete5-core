@@ -48,7 +48,7 @@ class JavascriptInlineAsset extends JavascriptAsset
      */
     public function __toString()
     {
-        return '<script type="text/javascript">' . $this->getAssetURL() . '</script>';
+        return '<script>' . $this->getAssetURL() . '</script>';
     }
 
     /**

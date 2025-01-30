@@ -85,7 +85,7 @@ if ($section) {
 </section>
 
 
-<script type="text/javascript">
+<script>
 
     $(function () {
 

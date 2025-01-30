@@ -89,7 +89,7 @@ $publishDate = $v->getPublishDate();
     }
 </style>
 
-<script type="text/javascript">
+<script>
     var ConcreteRevertPageToDraft = {
         sendRequest: function () {
             ConcreteEvent.fire('ExitComposerForm');

@@ -19,7 +19,7 @@ $containerId = "ccm-express-entry-selector-" . $idHelper->getString();
     <concrete-express-entry-selector entity-id='<?php echo $entity->getId(); ?>'></concrete-express-entry-selector>
 </div>
 
-<script type="text/javascript">
+<script>
     Concrete.Vue.activateContext('cms', function (Vue, config) {
         new Vue({
             el: '#<?php echo $containerId;?>',

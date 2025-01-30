@@ -44,7 +44,7 @@ $boardInstanceID = $boardInstanceID ?? 0;
 
 </div>
 
-<script type="text/javascript">
+<script>
 
     Concrete.Vue.activateContext('cms', function (Vue, config) {
         new Vue({

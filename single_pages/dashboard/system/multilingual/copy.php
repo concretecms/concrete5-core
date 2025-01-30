@@ -51,7 +51,7 @@ use Concrete\Core\Multilingual\Page\Section\Section as MultilingualSection;
                 }
                 ?>
 
-                <script type="text/javascript">
+                <script>
                     $(function () {
                         $("#ccm-internationalization-copy-tree").on('submit', function () {
                             var ctf = $('select[name=copyTreeFrom]').val();
@@ -122,7 +122,7 @@ use Concrete\Core\Multilingual\Page\Section\Section as MultilingualSection;
                 }
                 ?>
 
-                <script type="text/javascript">
+                <script>
                     $(function () {
                         $("#ccm-internationalization-rescan-tree").on('submit', function () {
                             var ctf = $('select[name=rescanLocale]').val();

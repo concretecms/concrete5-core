@@ -1,7 +1,7 @@
 <?php if (is_object($tree)) {
     ?>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             $('.tree-view-template').concreteTree({  // run first time around to get default tree if new.
                 'treeID': <?php echo $tree->getTreeID();

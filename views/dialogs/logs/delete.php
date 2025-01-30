@@ -35,7 +35,7 @@ $form = $app->make(Form::class)
     </form>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function () {
         ConcreteEvent.subscribe('AjaxFormSubmitSuccess', function (e, data) {
             if (data.form === 'delete-log-entry') {

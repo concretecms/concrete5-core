@@ -27,7 +27,7 @@ if (!Node::getByID($rootTreeNodeID) instanceof GroupFolder) {
     <div class="groups-tree" data-groups-tree="<?php echo $manager->getTreeID() ?>"></div>
     <?php echo $form->hidden($inputName) ?>
 
-    <script type="text/javascript">
+    <script>
         $(function () {
             $('[data-groups-tree=<?php echo $manager->getTreeID()?>]').concreteTree({
                 'treeID': '<?php echo $manager->getTreeID(); ?>',

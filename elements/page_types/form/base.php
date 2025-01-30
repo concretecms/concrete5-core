@@ -139,7 +139,7 @@ if ($request->isMethod(Request::METHOD_POST)) {
         }
     } ?>
 
-<script type="text/javascript">
+<script>
 $(function() {
 	$('input[name=ptPublishTargetTypeID]').on('click', function() {
 		$('div[data-page-type-publish-target-type-id]').hide();

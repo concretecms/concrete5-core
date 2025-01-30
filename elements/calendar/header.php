@@ -100,7 +100,7 @@ if (!isset($month)) {
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('a[data-dialog=delete-calendar]').on('click', function () {
             jQuery.fn.dialog.open({

@@ -10,6 +10,6 @@ $pk->setPermissionObject($board);
 
 <?php Loader::element("permission/detail", array('permissionKey' => $pk)); ?>
 
-<script type="text/javascript">
+<script>
     var ccm_permissionDialogURL = '<?=URL::to("/ccm/system/dialogs/boards/permissions", "board")?>';
 </script>

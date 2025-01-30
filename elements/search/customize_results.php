@@ -157,7 +157,7 @@ if (!isset($type)) {
 
 </section>
 
-<script type="text/javascript">
+<script>
     $(function () {
         var $form = $('section[data-section=customize-results]'),
             $columns = $form.find('ul[data-search-column-list]');

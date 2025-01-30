@@ -128,7 +128,7 @@ class RecaptchaV3Controller extends AbstractController implements CaptchaInterfa
 
         if (!$isInlineCodeAlreadyInjected) {
             $js = <<<EOL
-<script type="text/javascript">
+<script>
 if (typeof window.RecaptchaV3 === "undefined") {
     window.RecaptchaV3 = function () {
         $('.recaptcha-v3').each(function () {

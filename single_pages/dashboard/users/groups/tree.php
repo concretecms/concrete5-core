@@ -17,7 +17,7 @@ defined('C5_EXECUTE') or die('Access Denied.');
         </div>
     </div>
 </script>
-<script type="text/javascript">
+<script>
 $(function() {
     const parentDragRequest = ConcreteTree.prototype.dragRequest
     ConcreteTree.prototype.dragRequest = function() {

@@ -7,7 +7,7 @@ if (isset($allowMultipleValues) && $allowMultipleValues === false) {
 }
 ?>
 <div class="ccm-topic-attribute-wrapper">
-	<script type="text/javascript">
+	<script>
 	$(function() {
         var treeObj = $('.tree-view-template_<?php echo $akID ?>');
 		treeObj.concreteTree({

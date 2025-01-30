@@ -11,7 +11,7 @@
 </div>
 
 
-<script type="text/javascript">
+<script>
     $(function () {
         $('div[data-calendar=<?=$calendar->getID()?>]').fullCalendar({
             header: {

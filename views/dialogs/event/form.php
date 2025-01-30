@@ -46,7 +46,7 @@ if (!isset($occurrence) || !$occurrence) {
                     class="float-end btn btn-primary"><?= t('Save &amp; Close') ?></button>
         <?php } ?>
 
-    <script type="text/javascript">
+    <script>
         $(function () {
             var $eventForm = $('form.ccm-event-add');
 

@@ -8,7 +8,7 @@ if (is_object($tree)) {
     $selectNodesByKey = json_encode($selectedNode);
     ?>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             $('.tree-view-template-<?=$akID?>').concreteTree({  // run first time around to get default tree if new.
                 'treeID': <?php echo $tree->getTreeID();

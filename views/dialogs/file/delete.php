@@ -12,7 +12,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
         </div>
     </form>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.deleteFile');
             ConcreteEvent.subscribe('AjaxFormSubmitSuccess.deleteFile', function(e, data) {

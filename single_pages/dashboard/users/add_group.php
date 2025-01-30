@@ -76,7 +76,7 @@ use Concrete\Core\User\Group\GroupType; ?>
             <div class="controls">
                 <div class="groups-tree" style="width: 460px" data-groups-tree="<?=$tree->getTreeID()?>"></div>
                 <?=$form->hidden('gParentNodeID')?>
-                <script type="text/javascript">
+                <script>
                     $(function() {
                         $('[data-groups-tree=<?=$tree->getTreeID()?>]').concreteTree({
                             'treeID': '<?=$tree->getTreeID()?>',
@@ -226,7 +226,7 @@ use Concrete\Core\User\Group\GroupType; ?>
 
 </form>
 
-<script type="text/javascript">
+<script>
 ccm_checkGroupExpirationOptions = function() {
     var sel = $("select[name=gUserExpirationMethod]");
     var cb = $("input[name=gUserExpirationIsEnabled]");

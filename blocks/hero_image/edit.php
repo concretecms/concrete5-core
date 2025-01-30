@@ -105,7 +105,7 @@ $icon = $icon ?? '';
     </div>
 </fieldset>
 
-<script type="text/javascript">
+<script>
     $(function() {
         updateHeroImageHeight = function (value) {
             document.querySelector('span[data-value=height]').innerHTML = value

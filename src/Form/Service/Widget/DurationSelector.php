@@ -85,7 +85,7 @@ EOL;
 
         $html .= <<<EOL
         </div>
-        <script type="text/javascript">
+        <script>
         $(function() {
             $('[data-duration-selector-wrapper={$identifier}]').concreteDurationSelector({$args});
         });

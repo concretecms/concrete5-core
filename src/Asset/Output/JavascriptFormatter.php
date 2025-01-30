@@ -13,15 +13,15 @@ class JavascriptFormatter implements FormatterInterface
     {
         $str = '';
         if ($asset instanceof CssAsset) {
-            $str .= '<script type="text/javascript">';
+            $str .= '<script>';
             $str .= 'ConcreteAssetLoader.loadCSS("' . $asset->getAssetURL() . '")';
             $str .= '</script>';
         } elseif ($asset instanceof JavascriptInlineAsset) {
-            $str .= '<script type="text/javascript">';
+            $str .= '<script>';
             $str .= $asset->getAssetURL();
             $str .= '</script>';
         } elseif ($asset instanceof JavascriptAsset) {
-            $str .= '<script type="text/javascript">';
+            $str .= '<script>';
             $str .= 'ConcreteAssetLoader.loadJavaScript("' . $asset->getAssetURL() . '")';
             $str .= '</script>';
         }

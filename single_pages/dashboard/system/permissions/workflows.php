@@ -83,7 +83,7 @@ $app = \Concrete\Core\Support\Facade\Application::getFacadeApplication();
 			
 	</form>
 	
-	<script type="text/javascript">
+	<script>
 	$(function() {
 		$('select[name=wftID]').change(function() {
 			$('.ccm-workflow-type-form').hide();

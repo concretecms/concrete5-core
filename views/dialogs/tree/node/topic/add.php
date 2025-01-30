@@ -19,7 +19,7 @@ $form = Core::make("helper/form");
 
 		</form>
 
-		<script type="text/javascript">
+		<script>
 			$(function() {
 				_.defer(function() {
 					$('input[name=treeNodeTopicName]').focus();

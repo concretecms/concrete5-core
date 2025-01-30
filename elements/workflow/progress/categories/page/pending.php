@@ -79,7 +79,7 @@ $noitems = true;
 </table>
 </div>
 
-<script type="text/javascript">
+<script>
 $(function() {
 	$('.ccm-workflow-progress-actions form').ajaxForm({ 
 		dataType: 'json',

@@ -28,7 +28,7 @@ if (is_object($pagetype) && $pagetype->getPageTypePublishTargetTypeID() == $type
 	<?= $pageSelector->selectPage('startingPointPageIDAll', $startingPointPageID) ?>
 </div>
 
-<script type="text/javascript">
+<script>
 	$(function() {
 		$('select[name=selectorFormFactorAll]').on('change', function() {
 			$('div[data-all-form-factor-display]').hide();

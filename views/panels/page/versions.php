@@ -192,7 +192,7 @@ use Concrete\Core\Support\Facade\Url;
 </script>
 
 <!--suppress ES6ConvertVarToLetConst, SpellCheckingInspection, EqualityComparisonWithCoercionJS, JSUnusedAssignment, JSUnresolvedVariable -->
-<script type="text/javascript">
+<script>
     var ConcretePageVersionList = {
         sendRequest: function (url, data, onComplete) {
             var _data = [];

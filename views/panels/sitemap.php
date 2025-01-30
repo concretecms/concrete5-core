@@ -26,7 +26,7 @@
                 <?php } ?>
             </menu>
         </section>
-        <script type="text/javascript">
+        <script>
           $(function () {
             $('a[data-sitemap=show-more]').on('click', function (e) {
               e.preventDefault();
@@ -62,7 +62,7 @@
         <header><h5><?= t('Sitemap') ?></h5></header>
         <hr>
         <div id="ccm-sitemap-panel-sitemap"></div>
-        <script type="text/javascript">
+        <script>
           $(function () {
             $('#ccm-sitemap-panel-sitemap').concreteSitemap({
               onClickNode: function (node) {

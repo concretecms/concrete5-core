@@ -24,7 +24,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
                 </div>
             </form>
 
-            <script type="text/javascript">
+            <script>
                 $(function() {
                     ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.deleteTreeNode');
                     ConcreteEvent.subscribe('AjaxFormSubmitSuccess.deleteTreeNode', function(e, data) {

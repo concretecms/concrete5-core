@@ -24,7 +24,7 @@ if (Config::get('concrete.white_label.background_image') !== 'none' && !Config::
 <?php } ?>
 
 
-<script type="text/javascript">
+<script>
     $(function() {
 
         <?php if (isset($imagePath)) { ?>

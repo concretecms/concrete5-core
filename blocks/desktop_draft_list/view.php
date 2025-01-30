@@ -46,7 +46,7 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $('div.ccm-block-desktop-draft-list').concreteDraftList({
             reloadUrl:'<?= $view->action('reload_drafts'); ?>'

@@ -187,7 +187,7 @@ if (!empty($alternateHreflangTags)) {
     echo implode(PHP_EOL, $alternateHreflangTags).PHP_EOL;
 }
 ?>
-<script type="text/javascript">
+<script>
     var CCM_DISPATCHER_FILENAME = <?= json_encode(DIR_REL . '/' . DISPATCHER_FILENAME, JSON_UNESCAPED_SLASHES) ?>;
     var CCM_CID = <?= (int) $cID ?>;
     var CCM_EDIT_MODE = <?= $isEditMode ? 'true' : 'false' ?>;
@@ -208,7 +208,7 @@ if ($cp) {
     if ($isEditMode) {
         $cookie = $app->make('cookie');
         if ($cookie->get('ccmLoadAddBlockWindow')) {
-            $v->addFooterItem('<script type="text/javascript">$(function() { setTimeout(function() { $("a[data-launch-panel=add-block]").click()}, 100); });</script>');
+            $v->addFooterItem('<script>$(function() { setTimeout(function() { $("a[data-launch-panel=add-block]").click()}, 100); });</script>');
             $app->make(ResponseCookieJar::class)->clear('ccmLoadAddBlockWindow');
         }
     }

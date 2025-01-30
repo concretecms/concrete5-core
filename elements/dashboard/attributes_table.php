@@ -149,7 +149,7 @@ if (count($attribs) > 0) {
 <?php 
 } ?>
 
-<script type="text/javascript">
+<script>
 $(function() {
     $("ul.ccm-sortable-attribute-set-list-wrapper").sortable({
 		handle: 'i.ccm-item-select-list-sort',

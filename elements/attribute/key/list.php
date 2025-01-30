@@ -52,7 +52,7 @@ if (count($unassigned)) {
 
 if ($enableSorting) {
     ?>
-    <script type="text/javascript">
+    <script>
         $(function() {
             $("ul[data-sortable-attribute-set]").sortable({
                 handle: 'i.ccm-item-select-list-sort',
@@ -91,7 +91,7 @@ if (isset($types) && is_array($types) && count($types) > 0) {
         </div>
     </div>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             var documentHeight = $(document).height(),
                 position = $('button[data-button=attribute-type]').offset().top;

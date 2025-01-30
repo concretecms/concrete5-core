@@ -36,7 +36,7 @@ if (isset($height)) {
 
 <?php } ?>
 
-<script type="text/javascript">
+<script>
     $(function() {
         $(window).trigger('offsetTitleBlockLoaded')
     })

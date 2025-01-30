@@ -14,7 +14,7 @@ if (is_object($c)) {
 ?>
 
 <title><?=t('Preview')?></title>
-<script type="text/javascript">
+<script>
     var CCM_DISPATCHER_FILENAME = "<?= DIR_REL . '/' . DISPATCHER_FILENAME; ?>";
     var CCM_CID = <?= $cID ?? 0; ?>;
     var CCM_EDIT_MODE = false;

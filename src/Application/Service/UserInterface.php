@@ -418,7 +418,7 @@ class UserInterface
         unset($arguments['buttons'], $arguments['form']);
         $string = json_encode($arguments);
 
-        $content = '<script type="text/javascript">$(function() {';
+        $content = '<script>$(function() {';
         $content .= 'ConcretePageNotification.notify(' . $string . ');';
         $content .= '});</script>';
 

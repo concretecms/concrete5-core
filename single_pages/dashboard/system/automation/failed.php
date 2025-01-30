@@ -84,7 +84,7 @@ if (count($messages) > 0) {
         </table>
     </div>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             $('a[data-message-action]').on('click', function(e) {
                 e.preventDefault()

@@ -15,7 +15,7 @@
         </div>
     </form>
 
-    <script type="text/javascript">
+    <script>
         $(function() {
             ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.SavedSearchUpdated');
             ConcreteEvent.subscribe('AjaxFormSubmitSuccess.SavedSearchUpdated', function(e, data) {

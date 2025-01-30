@@ -102,7 +102,7 @@
         </div>
     </script>
 </div>
-<script type="text/javascript">
+<script>
     Concrete.event.fire('survey-edit-open');
 
     $(document).ready(function(){

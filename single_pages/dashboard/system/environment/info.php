@@ -8,7 +8,7 @@
 
 </div>
 
-<script type="text/javascript">
+<script>
 $(document).ready(function() {
     $.get('<?= $view->action('get_environment_info'); ?>').then(function(data) {
         $('#ccm-dashboard-environment-info-copy').show()

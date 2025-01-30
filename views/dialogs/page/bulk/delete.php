@@ -60,7 +60,7 @@
     ?>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function() {
         ConcreteEvent.unsubscribe('AjaxFormSubmitSuccess.sitemapBulkDelete');
         ConcreteEvent.subscribe('AjaxFormSubmitSuccess.sitemapBulkDelete', function(e, data) {

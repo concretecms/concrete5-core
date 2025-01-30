@@ -64,7 +64,7 @@ $token = $app->make(Token::class);
 </div>
 
 <!--suppress ES6ConvertVarToLetConst -->
-<script type="text/javascript">
+<script>
     $(function () {
         $('button[data-action=delete-association]').on('click', function () {
             var $element = $('#ccm-dialog-delete-association');

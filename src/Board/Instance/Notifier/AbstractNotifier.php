@@ -10,33 +10,33 @@ defined('C5_EXECUTE') or die("Access Denied.");
 
 abstract class AbstractNotifier implements NotifierInterface
 {
-
     /**
-     * @var EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     protected $entityManager;
 
-    /**
-     * @param EntityManager $entityManager
-     */
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @return \Concrete\Core\Entity\Board\Instance[]
+     */
     protected function filterBySite(?Site $site): array
     {
         $qb = $this->entityManager->getRepository(Instance::class)->createQueryBuilder('i');
         if ($site) {
             $qb->where('i.site = :site')->setParameter('site', $site);
         }
+
         return $qb->getQuery()->execute();
     }
 
     /**
-     * @param Instance[] $instances
-     * @param string $configurationClass
-     * @return array
+     * @param \Concrete\Core\Entity\Board\Instance[] $instances
+     *
+     * @return \Concrete\Core\Entity\Board\Instance[]
      */
     protected function filterByHasConfiguration(array $instances, string $configurationClass): array
     {
@@ -52,6 +52,7 @@ abstract class AbstractNotifier implements NotifierInterface
                 }
             }
         }
+
         return $return;
     }
 }

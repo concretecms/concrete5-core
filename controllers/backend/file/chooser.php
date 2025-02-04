@@ -147,17 +147,14 @@ class Chooser extends Controller
 
     public function getFolderFiles($folderId = null)
     {
+        $folder = null;
         $numberValidator = $this->app->make('helper/validation/numbers');
         $session = $this->app->make('session');
         if ($numberValidator->integer($folderId)) {
             $folder = $this->filesystem->getFolder($folderId);
-            if (!is_object($folder)) {
-                $error = $this->app->make('error');
-                $error->add(t('Unable to find the specified folder.'));
+        }
 
-                return new JsonResponse($error);
-            }
-        } else {
+        if (!$folder) {
             $folder = $this->filesystem->getRootFolder();
         }
 
@@ -193,15 +190,12 @@ class Chooser extends Controller
 
     public function getBreadcrumb($folderId = null)
     {
+        $folder = null;
         if ($this->app->make('helper/validation/numbers')->integer($folderId)) {
             $folder = $this->filesystem->getFolder($folderId);
-            if (!is_object($folder)) {
-                $error = $this->app->make('error');
-                $error->add(t('Unable to find the specified folder.'));
+        }
 
-                return new JsonResponse($error);
-            }
-        } else {
+        if (!$folder) {
             $folder = $this->filesystem->getRootFolder();
         }
 
